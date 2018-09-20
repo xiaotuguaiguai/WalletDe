@@ -27,11 +27,14 @@ import java.util.Map;
 public class RpcHttpUtil {
     private static final String RPC_HOST = "your wallet host,eg:199.9.9.9";
     private static final String RPC_PORT = "your wallet port,eg:9527";
+    private String RPC_USER = "your prc user";
+    private String RPC_PASSWORD = "you are rpc password ";
+
+
     private static final String URL = RPC_HOST + ":" + RPC_PORT;
     private JsonRpcHttpClient mClient;
     private RestTemplate mClient2;
-    private String RPC_USER = "your prc user";
-    private String RPC_PASSWORD = "you are rpc password ";
+
 
     public RpcHttpUtil() {
 
