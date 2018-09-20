@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!--格式化输出：%d:表示日期    %thread:表示线程名     %-5level:级别从左显示5个字符宽度  %msg:日志消息    %n:是换行符-->
+            <pattern>%black(%d{HH:mm:ss}) %black([%thread]) %highlight(%-5level) %logger
+                - %cyan(%msg%n)
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <!-- appender referenced after it is defined -->
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
