@@ -15,11 +15,6 @@ public class WalletDeApplicationTests {
     @Autowired
     OmniCoreDao omniCoreDao;
 
-    /***
-     *
-     * @param: []
-     * @return: void
-     **/
     @Test
     public void test0() {
         log.warn(omniCoreDao.getOmniInfo().toString());
@@ -31,12 +26,6 @@ public class WalletDeApplicationTests {
         log.warn(omniCoreDao.getBalance(""));
     }
 
-    //查询 omni信息
-    @Test
-    public void test2() {
-        log.warn(omniCoreDao.getOmniInfo().toString());
-
-    }
 
     //查询比特地址账户
     @Test
@@ -78,13 +67,21 @@ public class WalletDeApplicationTests {
     //查询事务列表
     @Test
     public void test9() {
-        log.warn(omniCoreDao.listOmniTransactions().toString());
+        //全部
+        log.warn(omniCoreDao.listOmniTransactions(null).toString());
+        //过滤地址
+        log.warn(omniCoreDao.listOmniTransactions("mpaumxor659PhoJhXp1VCVHVwbFCZSRmuf").toString());
     }
 
     //查询 缓冲区中的事务列表
     @Test
     public void test10() {
         log.warn(omniCoreDao.listOmniPendingTransactions().toString());
+    }
+
+    @Test
+    public void test11a() {
+        log.warn(omniCoreDao.getOmniTransaction("10e055df8cc920432ff407453238b46f8b6e4198950a879c9bdb3fc870952d7b").toString());
     }
 
     //查询 utxo列表
@@ -94,14 +91,21 @@ public class WalletDeApplicationTests {
 
     }
 
-    //
+    //转账交易令牌，固定手续费地址
     @Test
     public void test12() {
-        log.warn(omniCoreDao.sendOmniToken("sender address",
-                "receiver address",
-                1,
+        log.warn(omniCoreDao.sendOmniToken("your sender address",
+                "your receiver address",
+                31,
                 0.5,
-                "fee address"));
+                "your fee address"));
+    }
+
+    //发送地址上的所有令牌
+    @Test
+    public void test13() {
+        log.warn(omniCoreDao.sendOmniTokenAll("from", "to", true, "fee"));
+
     }
 
 

@@ -1,9 +1,9 @@
 package com.initsysctrl.omnidemo.dao;
 
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
-import com.initsysctrl.omnidemo.dto.BaseRPCresponse;
 import com.initsysctrl.omnidemo.dto.response.*;
-import com.initsysctrl.omnidemo.exception.BaseException;
+import com.initsysctrl.omnidemo.exception.E;
+import com.initsysctrl.omnidemo.utils.AssertUp;
 import com.initsysctrl.omnidemo.utils.RpcHttpUtil;
 import com.sun.istack.internal.Nullable;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +24,7 @@ import java.util.List;
 @Repository
 @SuppressWarnings(value = {"unused", "unchecked", "FieldCanBeLocal"})
 public class OmniCoreDao {
+
 
     private RpcHttpUtil http;
     private JsonRpcHttpClient mClient;
@@ -84,6 +85,7 @@ public class OmniCoreDao {
      * @return: com.leazxl.bs.dto.BaseRPCresponse<java.lang.String>
      **/
     public String getAccountByAddress(String address) {
+        AssertUp.isTrue(validateAddress(address).isvalid, E.ADDRESS_ERROR);
         return http.engine("getaccount", String.class, address);
     }
 
@@ -101,13 +103,24 @@ public class OmniCoreDao {
         }
     }
 
+    /***
+     * 查询指定地址的收款总额（不是余额！不是余额！不是余额）
+     * @param:地址
+     * @return:收款总额
+     **/
+    public String getReceivedByAddress(String address) {
+        return http.engine("getreceivedbyaddress", address);
+    }
+
 
     /***
-     * 获取UTXo，这个应该被作为查询比特币余额的实现
+     * 获取UTXo
      * @param: [address]
      * @return: void
      **/
     public List<UnspentRes> listUnSpent(@Nullable java.lang.String address) {
+
+        AssertUp.isTrue(address == null || validateAddress(address).isvalid, E.ADDRESS_ERROR);
         if (StringUtils.isEmpty(address)) {
             return http.engine("listunspent", List.class);
         } else {
@@ -155,6 +168,8 @@ public class OmniCoreDao {
      * @return: java.lang.String
      **/
     public List<OmniTokenBalanceInfoRes> getBalanceByAddAndId(String address, int propertyid) {
+
+        AssertUp.isTrue(validateAddress(address).isvalid, E.ADDRESS_ERROR);
         return http.engine("omni_getbalance", List.class, address, propertyid);
     }
 
@@ -176,6 +191,10 @@ public class OmniCoreDao {
      * @return:
      */
     public List<OmniTokenBalanceInfoRes> getOmniBalanceByAddress(String address) {
+
+
+        AssertUp.isTrue(validateAddress(address).isvalid, E.ADDRESS_ERROR);
+
         return http.engine("omni_getallbalancesforaddress", List.class, address);
     }
 
@@ -240,9 +259,10 @@ public class OmniCoreDao {
                                 int propertyid,
                                 double amount,
                                 String feeaddress) {
-        if (amount < 0) {
-            throw new BaseException("W89757", "ammount<0");
-        }
+        AssertUp.isTrue(validateAddress(feeaddress).isvalid, E.ADDRESS_ERROR);
+        AssertUp.isTrue(validateAddress(toaddress).isvalid, E.ADDRESS_ERROR);
+        AssertUp.isTrue(validateAddress(fromaddress).isvalid, E.ADDRESS_ERROR);
+        AssertUp.isTrue(amount > 0, E.AMOUNT_INPUT_EEROR);
 
         return http.engine("omni_funded_send", fromaddress, toaddress, propertyid, String.valueOf(amount), feeaddress);
     }
@@ -260,6 +280,10 @@ public class OmniCoreDao {
      * @return: void
      **/
     public String sendOmniTokenAll(String fromaddress, String toaddress, boolean is_main_ecosystem, String feeaddressx) {
+        AssertUp.isTrue(validateAddress(feeaddressx).isvalid, E.ADDRESS_ERROR);
+        AssertUp.isTrue(validateAddress(toaddress).isvalid, E.ADDRESS_ERROR);
+        AssertUp.isTrue(validateAddress(fromaddress).isvalid, E.ADDRESS_ERROR);
+
         return http.engine("omni_funded_sendall", String.class, fromaddress, toaddress, is_main_ecosystem ? 1 : 2, feeaddressx);
     }
 
@@ -279,6 +303,7 @@ public class OmniCoreDao {
      * 列出钱包事务，可选地按地址和块边界过滤。充值事件在这个方法的返回中
      * List wallet transactions, optionally filtered by an address and block boundaries.
      * 【本机】
+     * 不建议直接使用这个方法
      *
      * @param: String txid      可选的	地址过滤（默认："*"）
      * int count	    可选的	显示最多n事务（默认：10）
@@ -287,6 +312,7 @@ public class OmniCoreDao {
      * int endblock;    可选的 最后一个块中搜索包括（默认值：999999999）
      * @return: java.lang.String
      **/
+    @Deprecated
     public List<OmniTransactionRes> listOmniTransactions(String tx, int count, int skip, int start, int end) {
         return http.engine("omni_listtransactions", List.class, tx, count, skip, start, end);
     }
@@ -294,11 +320,21 @@ public class OmniCoreDao {
     /***
      * 列出【本机】钱包事务，可选地按地址和块边界过滤。充值事件在这个方法的返回中
      * 默认实现
-     * @param: []
+     * @param: [address：相关地址，如果为空则不过滤]
      * @return: java.lang.String，返回的结果中 ismine为true代表与本钱包中的地址有关系
      **/
-    public List<OmniTransactionRes> listOmniTransactions() {
-        return listOmniTransactions("*", 100, 0, 0, 999999999);
+    public List<OmniTransactionRes> listOmniTransactions(@Nullable String address) {
+
+        AssertUp.isTrue(validateAddress(address).isvalid || address == null || address.equals("*"), E.ADDRESS_ERROR);
+
+        String x = StringUtils.isEmpty(address) ? "*" : address;
+        return http.engine("omni_listtransactions",
+                List.class,
+                x,
+                100,
+                0,
+                0,
+                999999999);
     }
 
     /***
