@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -354,6 +356,46 @@ public class OmniCoreDao {
     public List<String> listBlockTransactions(long block_height) {
         return http.engine("omni_listblocktransactions", List.class, block_height);
     }
+
+    /***
+     * 钱包数据备份
+     * @param: []
+     * @return: void
+     * https://bitcoin.org/en/developer-reference#backupwallet
+     **/
+    public String backupWallet() {
+        System.currentTimeMillis();
+        String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        String file = String.format("wallet-%s.dat", time);
+        http.engine("backupwallet", file);
+        return file;
+    }
+
+    /***
+     * 钱包数据导入
+     * @param: []
+     * @return: void
+     * https://bitcoin.org/en/developer-reference#importwallet
+     *对于影响新添加的密钥的事务，此调用可能需要重新扫描整个或部分块链，这可能需要几分钟。
+     **/
+    public void importWallet(String fielName) {
+        http.engine("importwallet", fielName);
+    }
+
+    /***
+     * 导出钱包数据以人类可读的方式
+     * @param: []
+     * @return: java.lang.String
+     **/
+    public String dumpWallet() {
+        System.currentTimeMillis();
+        String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        String file = String.format("wallet-%s.txt", time);
+        http.engine("dumpwallet", file);
+        return file;
+    }
+
+
 
 }
 

@@ -109,4 +109,18 @@ public class WalletDeApplicationTests {
     }
 
 
+    //备份钱包以 .dat的格式
+    @Test
+    public void test14() {
+        log.warn(omniCoreDao.backupWallet());
+    }
+
+    //导出钱包以 .txt的格式
+    @Test
+    public void test15() {
+        log.warn(omniCoreDao.dumpWallet());
+    }
+
+
+
 }
