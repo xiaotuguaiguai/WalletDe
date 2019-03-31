@@ -1,4 +1,4 @@
-package com.initsysctrl.omnidemo.dto.response;
+package com.initsysctrl.omnidemo.dto.reponse;
 
 import lombok.Data;
 
@@ -22,7 +22,7 @@ public class OmniTokenBalWithAddressRes {
     private String address;
     private List<BalancesBean> balances;
 
-
+    @Data
     public static class BalancesBean {
         /**
          * propertyid : 1
@@ -32,7 +32,7 @@ public class OmniTokenBalWithAddressRes {
          * frozen : 0.00000000
          */
 
-        private int propertyid;
+        private long propertyid;
         private String name;
         private String balance;
         private String reserved;

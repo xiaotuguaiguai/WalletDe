@@ -1,8 +1,9 @@
-package com.initsysctrl.omnidemo.dto.response;
+package com.initsysctrl.omnidemo.dto.reponse;
 
 import lombok.Data;
 
 /**
+ * @package: com.leazxl.bs.bean
  * @description:
  * @author: yepeng
  * @create: 2018-09-04 10:38

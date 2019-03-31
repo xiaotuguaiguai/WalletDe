@@ -1,8 +1,9 @@
-package com.initsysctrl.omnidemo.dto.response;
+package com.initsysctrl.omnidemo.dto.reponse;
 
 import lombok.Data;
 
 /**
+ * @package: com.leazxl.bs.dto.reponse
  * @description:
  * @author: yepeng
  * @create: 2018-09-05 18:00
@@ -28,7 +29,7 @@ public class OmniPropertyInfoRes {
      * totaltokens : 221707.23801701
      */
 
-    private int propertyid;
+    private long propertyid;
     private String name;
     private String category;
     private String subcategory;

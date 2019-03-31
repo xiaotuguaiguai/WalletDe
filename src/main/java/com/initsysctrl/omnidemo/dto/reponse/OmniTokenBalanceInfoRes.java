@@ -1,8 +1,11 @@
-package com.initsysctrl.omnidemo.dto.response;
+package com.initsysctrl.omnidemo.dto.reponse;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
+ * @package: com.leazxl.bs.dto.reponse
  * @description:
  * @author: yepeng
  * @create: 2018-09-05 18:07
@@ -33,12 +36,21 @@ public class OmniTokenBalanceInfoRes {
 //             "reserved": "0",
 //             "frozen": "0"
 
-
     private String address;
-    private int propertyid;
+    private long propertyid;
     private String balance;
     private String reserved;
     private String frozen;
+    private String name;
 
 
+    public double getValueDoub() {
+        if (balance == null || balance.isEmpty()) return 0;
+        return Double.valueOf(balance);
+    }
+
+    public BigDecimal getValueBigd() {
+        if (balance == null || balance.isEmpty()) return new BigDecimal("0");
+        return new BigDecimal(balance);
+    }
 }

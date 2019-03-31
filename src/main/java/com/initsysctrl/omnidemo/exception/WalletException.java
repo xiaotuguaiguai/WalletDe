@@ -2,9 +2,9 @@ package com.initsysctrl.omnidemo.exception;
 
 
 /**
- * @ClassName:
+ * @ClassName: BaseException
  * @Description: exception of wallet , create or trans
- * @Author: mr.dajiushen
+ * @Author: mr.wang
  * @Date:
  * @Version: 1.0
  **/

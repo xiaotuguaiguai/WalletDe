@@ -1,11 +1,14 @@
-package com.initsysctrl.omnidemo.dto.response;
+package com.initsysctrl.omnidemo.dto.reponse;
+
+import lombok.Data;
 
 /**
- *
+ * @package: com.leazxl.bs.dto.reponse
  * @description:
  * @author: yepeng
  * @create: 2018-09-17 17:44
  **/
+@Data
 public class UnspentRes {
 
 
@@ -31,4 +34,18 @@ public class UnspentRes {
     private boolean spendable;
     private boolean solvable;
 
+    @Override
+    public String toString() {
+        return "UnspentRes{" + '\n' +
+                "txid='" + txid + '\n' +
+                "vout=" + vout +
+                "address='" + address + '\n' +
+                "account='" + account + '\n' +
+                "scriptPubKey='" + scriptPubKey + '\n' +
+                "amount=" + amount + '\n' +
+                "confirmations=" + confirmations + '\n' +
+                "spendable=" + spendable + '\n' +
+                "solvable=" + solvable + '\n' +
+                '}' + '\n';
+    }
 }
