@@ -377,4 +377,6 @@ public class WalletDeApplicationTests {
 //            log.warn(String.format("需要手动归集的地址：%s", a));
 //        }
 //    }
+
+
 }
