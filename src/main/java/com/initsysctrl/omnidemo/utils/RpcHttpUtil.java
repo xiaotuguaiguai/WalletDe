@@ -22,13 +22,13 @@ import java.util.Map;
 @Slf4j
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class RpcHttpUtil {
-    private static final String RPC_HOST = "你的钱包服务端ip如http://123.456.7.890";
-    private static final String RPC_PORT = "你的钱包端口号，如 8848";
+    private static final String RPC_HOST = "你的钱包ip地址";
+    private static final String RPC_PORT = "端口";
     private static final String URL = RPC_HOST + ":" + RPC_PORT;
     private JsonRpcHttpClient mClient;
     private RestTemplate mClient2;
-    private String RPC_USER = "8848钛金用户名";
-    private String RPC_PASSWORD = "8848钛金密码";
+    private String RPC_USER = "rpc 用户名";
+    private String RPC_PASSWORD = "rpc 密码";
 
     public RpcHttpUtil() {
 

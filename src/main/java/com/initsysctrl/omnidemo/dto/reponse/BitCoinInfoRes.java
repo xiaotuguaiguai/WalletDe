@@ -44,4 +44,5 @@ public class BitCoinInfoRes {
     private double paytxfee;
     private double relayfee;
     private String errors;
+    private int unlocked_until;
 }

@@ -29,9 +29,9 @@ public class WalletDeApplicationTests {
      **/
     @Test
     public void test0() {
-        log.warn(omniCoreDao.getOmniInfo().toString());
-        log.warn(omniCoreDao.getOmniInfo().getOmnicoreversion());
-//        log.warn(omniCoreDao.getBitCoinInfo().toString());
+//        log.warn(omniCoreDao.getOmniInfo().toString());
+//        log.warn(omniCoreDao.getOmniInfo().getOmnicoreversion());
+        log.warn(omniCoreDao.getBitCoinInfo().toString());
     }
 
     //查询 比特余额
@@ -90,10 +90,54 @@ public class WalletDeApplicationTests {
 
     }
 
-    //查询 缓冲区中的事务列表
+    //查询 缓冲区中的事务列表，统计未确认交易的类型、id、金额和地址
     @Test
     public void test10() {
-        log.warn(omniCoreDao.listOmniPendingTransactions().toString());
+        String address = "";//不做地址过滤
+        List<OmniTransactionRes> pendingTransactions = omniCoreDao.listOmniPendingTransactions(address);
+        if (pendingTransactions == null) {
+            log.warn("交易缓冲区为空");
+        } else {
+            int sum = 0;
+            int recharge = 0;
+            int withdrawal = 0;
+            int internal = 0;
+            for (OmniTransactionRes pend : pendingTransactions) {
+                if (pend == null) continue;
+                boolean ismine = pend.isIsmine();
+                if (!ismine) continue;
+                if (pend.getPropertyid() != 31) continue;
+                if (pend.getType_int() != 0) continue;
+                String txid = pend.getTxid();
+                String sendingaddress = pend.getSendingaddress();
+                String referenceaddress = pend.getReferenceaddress();
+                String amount = pend.getAmount();
+                boolean sendIsMine = omniCoreDao.validateAddress(sendingaddress).ismine;
+                boolean refeIsMine = omniCoreDao.validateAddress(referenceaddress).ismine;
+                String type;
+
+                if (sendIsMine) {
+                    if (refeIsMine) {
+                        type = "内部归集";
+                        internal++;
+                    } else {
+                        type = "提现类型";
+                        withdrawal++;
+                    }
+                } else {
+                    if (refeIsMine) {
+                        type = "充值类型";
+                        recharge++;
+                    } else {
+                        type = "异常类型";
+                    }
+                }
+                String format = String.format("\n 交易哈希: %s \n 发送者：%s \n 接收者：%s \n 金额: %s \n 类型：%s \n --------- \n", txid, sendingaddress, referenceaddress, amount, type);
+                sum++;
+                log.warn(format);
+            }
+            log.warn(String.format("累计未确认交易%s条，其中充值 %s条未确认，提现%s条未确认，内部归集%s条未确认", sum, recharge, withdrawal, internal));
+        }
     }
 
     @Test
@@ -101,27 +145,32 @@ public class WalletDeApplicationTests {
         log.warn(omniCoreDao.getOmniTransaction("10e055df8cc920432ff407453238b46f8b6e4198950a879c9bdb3fc870952d7b").toString());
     }
 
-    //查询 utxo列表
+    //查询某个地址下的utxo总和，即btc余额
     @Test
     public void test11() {
         //执行这个方法
         List<UnspentRes> res = omniCoreDao.listUnSpent(null);
-        //打印
-        log.warn(res.toString());
-        //获取实体
-        log.warn(res.get(0).toString());
-
+        if (res == null || res.isEmpty()) {
+            log.warn("0");
+        } else {
+            double sum = 0.0;
+            for (UnspentRes utxo : res) {
+                double amount = utxo.getAmount();
+                sum += amount;
+            }
+            log.warn(String.valueOf(sum));
+        }
     }
 
     //转账交易令牌，固定手续费地址
     @Test
     public void test12() {
         log.warn(omniCoreDao.sendOmniToken(
-                "mh7tRuxwdJmeYzRai8vm377pi4K3SLTdM2",//5.8,0.2
-                "mhbDvsb2bVncbQkMMrU1KnM4kMxNJL8xbf",//0
+                "发送地址",//5.8,0.2
+                "接受地址",//0
                 1,
                 new BigDecimal("0.1"),
-                "mh7tRuxwdJmeYzRai8vm377pi4K3SLTdM2"));//0.94601041,
+                "手续费地址"));//0.94601041,
     }
 
     //发送地址上的所有令牌
@@ -142,7 +191,7 @@ public class WalletDeApplicationTests {
         log.warn(omniCoreDao.dumpWallet());
     }
 
-    //以原生交易方式发送omni代币
+    //以原生交易方式发送omni代币-废弃
     @Test
     public void test16() {
         String fromaddress = "mjH1iB7wt5TC4f8qjvZqtmBXd1aCPSPinC";
@@ -165,10 +214,10 @@ public class WalletDeApplicationTests {
     //批量转btc
     @Test
     public void test18() {
-        String fromaddress = "mh7tRuxwdJmeYzRai8vm377pi4K3SLTdM2";
+        String fromaddress = "send";
         HashMap<String, Double> map = new HashMap<>();
-        map.put("mhbDvsb2bVncbQkMMrU1KnM4kMxNJL8xbf", 0.0000055);
-        map.put("mhbDvsb2bVncbQkMMrU1KnM4kMxNJL8xbf", 0.0000055);
+        map.put("t01", 0.0000055);
+        map.put("to2", 0.0000055);
 //        map.put("mhbDvsb2bVncbQkMMrU1KnM4kMxNJL8xbf", 0.0000055);
 //        map.put("mhbDvsb2bVncbQkMMrU1KnM4kMxNJL8xbf", 0.0000055);
 //        map.put("mhbDvsb2bVncbQkMMrU1KnM4kMxNJL8xbf", 0.0000055);
@@ -178,8 +227,6 @@ public class WalletDeApplicationTests {
 //        map.put("mjH1iB7wt5TC4f8qjvZqtmBXd1aCPSPinC", 0.0000055);
 //        map.put("mm3UmfEUwhHvFBJGycHT4BqPaEwrLRBsKx", 0.0000055);
 //        map.put("mpaumxor659PhoJhXp1VCVHVwbFCZSRmuf", 0.0000055);
-
-
         String hash = omniCoreDao.sendBtcBatch(fromaddress, map);
         log.warn("比特币交易广播结束：" + hash);
     }
@@ -238,32 +285,6 @@ public class WalletDeApplicationTests {
         log.warn("raw txid=" + raw);
     }
 
-//    @Test
-//    public void test24() {
-//        List<UsdtTransHistory> list = usdtTransRepository.findByCantCollect("mhbDvsb2bVncbQkMMrU1KnM4kMxNJL8xbf");
-//        log.warn("list:::::\n" + list.size());
-//        for (UsdtTransHistory u : list) {
-//            log.warn("" + u.getSendAdd() + "【" + u.getStatus() + "】" + "\n");
-//        }
-//    }
-//
-//    @Test
-//    public void test25() {
-//        int n = 100;
-//        String account = null;
-//
-//        long start = System.currentTimeMillis();
-//        for (int i = 0; i < n; i++) {
-//            String address = omniCoreDao.getNewAddress(null);
-//            String privkey = omniCoreDao.dumpPrivkey(address);
-//            UsdtAddress usdtAddress = new UsdtAddress(address, account, privkey);
-//            usdtAddressRepositry.save(usdtAddress);
-//            System.out.print("new address=" + address + "\n");
-//        }
-//        long end = System.currentTimeMillis();
-//        System.out.print("耗时：" + ((end - start) / 1000) + " s");
-//
-//    }
 
     /*
      *查询转入总和，转出总和，以及等待归集地址
@@ -377,6 +398,33 @@ public class WalletDeApplicationTests {
 //            log.warn(String.format("需要手动归集的地址：%s", a));
 //        }
 //    }
+// 查询未归集 且 缺少utxo的地址
+public void getSpecialAddress() {
+    ArrayList<String> specialAddress = new ArrayList<>();
+    //遍历出所有的omni 代币地址余额列表
+    List<OmniTokenBalWithAddressRes> balances = omniCoreDao.getAllBalancesWithAddress();
+    for (OmniTokenBalWithAddressRes om : balances) {
+        String address = om.getAddress();//代查询地址
+        //查询改地址下是否含有usdt 的代币
+        List<OmniTokenBalWithAddressRes.BalancesBean> omBalances = om.getBalances();
+        if (omBalances == null || omBalances.isEmpty()) continue;
+        for (OmniTokenBalWithAddressRes.BalancesBean ombean : omBalances) {
+            if (ombean == null) continue;
+            if (ombean.getPropertyid() != 31) continue;//如果代币不是usdt，不处理
+            String balance = ombean.getBalance();
+            if (Double.valueOf(balance) <= 0) continue;//如果地址下面的usdt小于某个值，就不处理
+            //最后查询这个有usdt的未归集地址下面，是否有utxo
+            List<UnspentRes> unspentRes = omniCoreDao.listUnSpent(address);
+            if (unspentRes == null || unspentRes.isEmpty()) {
+                specialAddress.add(address);//将这个缺少utxo的地址添加到集合中
+            }
+        }
+    }
+    // 打印或者存储，有USDT，但没有utxo的地址
+    for (String speAddress : specialAddress) {
+        log.warn(speAddress);
+    }
+}
 
 
 }

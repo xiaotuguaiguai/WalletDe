@@ -576,8 +576,14 @@ public class OmniCoreDao {
      * @param: []
      * @return: void
      **/
-    public List<OmniTransactionRes> listOmniPendingTransactions() {
-        Object object = http.engine("omni_listpendingtransactions", Object.class);
+    public List<OmniTransactionRes> listOmniPendingTransactions(@Nullable String address) {
+        String add;
+        if (address == null || address.equals("") || address.equals("*")) {
+            add = "";
+        } else {
+            add = address;
+        }
+        Object object = http.engine("omni_listpendingtransactions", Object.class, add);
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<OmniTransactionRes>> typeReference = new TypeReference<List<OmniTransactionRes>>() {
         };
