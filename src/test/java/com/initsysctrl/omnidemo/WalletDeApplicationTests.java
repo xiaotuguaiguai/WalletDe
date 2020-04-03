@@ -46,7 +46,9 @@ public class WalletDeApplicationTests {
     @Test
     public void test3() {
         log.warn("============================================");
-        log.warn(omniCoreDao.getAccountByAddress("mgmNSxhyBifCfaaoKmvMMVGdpRSpBBA87G"));
+//        log.warn(omniCoreDao.getAccountByAddress("mgmNSxhyBifCfaaoKmvMMVGdpRSpBBA87G"));
+        log.warn(omniCoreDao.getReceivedByAddress("mgmNSxhyBifCfaaoKmvMMVGdpRSpBBA87G"));
+
         log.warn("============================================");
     }
 
