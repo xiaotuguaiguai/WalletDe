@@ -1,5 +1,6 @@
 package com.initsysctrl.omnidemo;
 
+import com.alibaba.fastjson.JSONObject;
 import com.initsysctrl.omnidemo.dao.OmniCoreDao;
 import com.initsysctrl.omnidemo.dto.reponse.*;
 import lombok.extern.slf4j.Slf4j;
@@ -37,14 +38,16 @@ public class WalletDeApplicationTests {
     //查询 比特余额
     @Test
     public void test1() {
-        log.warn(omniCoreDao.getBalance(""));
+        log.warn(omniCoreDao.getBalance("mgmNSxhyBifCfaaoKmvMMVGdpRSpBBA87G"));
     }
 
 
     //查询比特地址账户
     @Test
     public void test3() {
-        log.warn(omniCoreDao.getAccountByAddress("mjH1iB7wt5TC4f8qjvZqtmBXd1aCPSPinC"));
+        log.warn("============================================");
+        log.warn(omniCoreDao.getAccountByAddress("mgmNSxhyBifCfaaoKmvMMVGdpRSpBBA87G"));
+        log.warn("============================================");
     }
 
     //投硬币，连续抛255次
@@ -98,7 +101,11 @@ public class WalletDeApplicationTests {
 
     @Test
     public void test11a() {
-        log.warn(omniCoreDao.getOmniTransaction("10e055df8cc920432ff407453238b46f8b6e4198950a879c9bdb3fc870952d7b").toString());
+       // log.warn(omniCoreDao.getOmniTransaction("d46f7b612c2cb8ad7bd684b7b2bf225ac40587caf77cfd85cb33a71ab5439438").toString());
+//        log.warn(omniCoreDao.listBlockTransactions(600000L).toString());
+        OmniTokenBalanceInfoRes omniTokenBalanceInfoRes = omniCoreDao.getBalanceByAddAndId("mhuQvhXABbyjpR26AhjH3y5LvFN1EWDiBj", 1);
+        String str = JSONObject.toJSONString(omniTokenBalanceInfoRes);//fastjson默认转换是不序列化null值对应的key的
+        log.warn(str);
     }
 
     //查询 utxo列表
@@ -156,7 +163,7 @@ public class WalletDeApplicationTests {
     //发送比特币，支持手续费
     @Test
     public void test17() {
-        String fromaddress = "mh7tRuxwdJmeYzRai8vm377pi4K3SLTdM2";
+        String fromaddress = "mgmNSxhyBifCfaaoKmvMMVGdpRSpBBA87G";
         String toAddress = "moneyqMan7uh8FqdCA2BV5yZ8qVrc9ikLP";
         Double amount = 0.1;
         log.warn(omniCoreDao.sendBtc(fromaddress, toAddress, amount));
@@ -220,8 +227,6 @@ public class WalletDeApplicationTests {
             if (bean.getPropertyid() == 31) {
                 bean.getBalance();
             }
-
-
         }
 
     }

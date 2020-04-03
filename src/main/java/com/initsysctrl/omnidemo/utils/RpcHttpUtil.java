@@ -22,21 +22,24 @@ import java.util.Map;
 @Slf4j
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class RpcHttpUtil {
-    private static final String RPC_HOST = "你的钱包服务端ip如http://123.456.7.890";
-    private static final String RPC_PORT = "你的钱包端口号，如 8848";
+    private static final String RPC_HOST = "http://47.52.103.44";
+    private static final String RPC_PORT = "18332";
     private static final String URL = RPC_HOST + ":" + RPC_PORT;
     private JsonRpcHttpClient mClient;
     private RestTemplate mClient2;
-    private String RPC_USER = "8848钛金用户名";
-    private String RPC_PASSWORD = "8848钛金密码";
+    private String RPC_USER = "supermor123";
+    private String RPC_PASSWORD = "supermorpsw";
 
     public RpcHttpUtil() {
 
         String cred = Base64.encodeBase64String((RPC_USER + ":" + RPC_PASSWORD).getBytes());
+        log.error(RPC_USER + ":" + RPC_PASSWORD);
         Map<String, String> headers = new HashMap<>(1);
         headers.put("Authorization", "Basic " + cred);
         try {
             this.mClient = new JsonRpcHttpClient(new URL(URL), headers);
+            log.error(URL);
+            log.error(mClient.getHeaders().toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -59,6 +62,7 @@ public class RpcHttpUtil {
         } catch (Throwable throwable) {
             String message = throwable.getMessage();
             Throwable cause = throwable.getCause();
+            log.error(message == null ? "error message=null" : "error message111=" + message);
             log.error(cause == null ? "error cause=null" : "error cause=" + cause.getMessage());
             log.error(throwable == null ? "error message=null" : "error message=" + throwable.getMessage());
             try {
