@@ -132,7 +132,7 @@ public class OmniCoreDao {
      * @param: [account] 账户名，如果不设置默认为空
      * @return: java.lang.String 地址
      **/
-    public String getNewAddress(@Nullable String account) {
+    public String getNewAddress( String account) {
         if (StringUtils.isEmpty(account)) {
             return http.engine("getnewaddress", String.class);
         } else {
@@ -176,7 +176,7 @@ public class OmniCoreDao {
      * @param: [account]
      * @return: java.lang.String
      **/
-    public String getBalance(@Nullable java.lang.String account) {
+    public String getBalance( java.lang.String account) {
         if (StringUtils.isEmpty(account)) {
             return http.engine("getbalance", String.class);
         } else {
@@ -199,7 +199,7 @@ public class OmniCoreDao {
      * @param: [address]
      * @return: void
      **/
-    public List<UnspentRes> listUnSpent(@Nullable String address) {
+    public List<UnspentRes> listUnSpent( String address) {
         AssertUp.isTrue(address == null || validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
         Object result;
         if (StringUtils.isEmpty(address)) {
@@ -547,7 +547,7 @@ public class OmniCoreDao {
      * @param: [address：相关地址，如果为空则不过滤]
      * @return: java.lang.String，返回的结果中 ismine为true代表与本钱包中的地址有关系
      **/
-    public List<OmniTransactionRes> listOmniTransactions(@Nullable String address) {
+    public List<OmniTransactionRes> listOmniTransactions( String address) {
 
         AssertUp.isTrue(address == null || address.equals("*") || validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
 

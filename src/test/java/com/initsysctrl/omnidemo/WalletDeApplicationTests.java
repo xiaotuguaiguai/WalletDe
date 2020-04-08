@@ -306,13 +306,13 @@ public class WalletDeApplicationTests {
             } else if (sendIsMine && !referenceIsMine) {
                 //提现记录
 
-                String amount = res.getAmount();
-                double v = new BigDecimal(amount).doubleValue();
-                withdrawSum += v;
-                withrawNum++;
-                log.warn(String.format("提现：%s", amount));
-            } else {
-            }
+//                String amount = res.getAmount();
+//                double v = new BigDecimal(amount).doubleValue();
+//                withdrawSum += v;
+//                withrawNum++;
+//                log.warn(String.format("提现：%s", amount));
+//            } else {
+//            }
         }
 
         double allUsdtBalance = 0;
@@ -383,5 +383,5 @@ public class WalletDeApplicationTests {
 //        for (String a : needhandle) {
 //            log.warn(String.format("需要手动归集的地址：%s", a));
 //        }
-//    }
+    }
 }

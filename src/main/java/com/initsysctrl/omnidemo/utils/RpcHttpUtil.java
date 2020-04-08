@@ -23,12 +23,12 @@ import java.util.Map;
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class RpcHttpUtil {
     private static final String RPC_HOST = "http://47.52.103.44";
-    private static final String RPC_PORT = "18332";
+    private static final String RPC_PORT = "8332";
     private static final String URL = RPC_HOST + ":" + RPC_PORT;
     private JsonRpcHttpClient mClient;
     private RestTemplate mClient2;
-    private String RPC_USER = "supermor123";
-    private String RPC_PASSWORD = "supermorpsw";
+    private String RPC_USER = "usdtuser";
+    private String RPC_PASSWORD = "rpc!@12abc";
 
     public RpcHttpUtil() {
 

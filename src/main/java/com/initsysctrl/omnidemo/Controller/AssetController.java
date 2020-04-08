@@ -15,6 +15,11 @@ public class AssetController {
     @Autowired
     OmniCoreDao omniCoreDao;
 
+    @RequestMapping("/test")
+    public String test() {
+        return "test";
+    }
+
     @RequestMapping("/getBalanceU")
     public String getBalanceUsdt(@RequestParam String address) {
         OmniTokenBalanceInfoRes omniTokenBalanceInfoRes = omniCoreDao.getBalanceByAddAndId(address, 1);
@@ -39,7 +44,5 @@ public class AssetController {
                 new BigDecimal(num),
                 "mgmNSxhyBifCfaaoKmvMMVGdpRSpBBA87G");
     }
-
-
 
 }
