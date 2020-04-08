@@ -1,6 +1,7 @@
 package com.initsysctrl.omnidemo.dao;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
@@ -11,7 +12,6 @@ import com.initsysctrl.omnidemo.dto.reponse.*;
 import com.initsysctrl.omnidemo.exception.E;
 import com.initsysctrl.omnidemo.utils.AssertUp;
 import com.initsysctrl.omnidemo.utils.RpcHttpUtil;
-import com.sun.istack.internal.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -35,6 +35,7 @@ import static com.initsysctrl.omnidemo.exception.E.BLANCE_ENOUTH_ERROR;
 
 @Slf4j
 @Repository
+@JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings(value = {"unused", "unchecked", "FieldCanBeLocal"})
 public class OmniCoreDao {
 
@@ -268,7 +269,7 @@ public class OmniCoreDao {
      **/
     public OmniTokenBalanceInfoRes getBalanceByAddAndId(String address, int propertyid) {
 
-        AssertUp.isTrue(validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
+//        AssertUp.isTrue(validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
         return http.engine("omni_getbalance", OmniTokenBalanceInfoRes.class, address, propertyid);
 
     }
@@ -549,13 +550,14 @@ public class OmniCoreDao {
      **/
     public List<OmniTransactionRes> listOmniTransactions( String address) {
 
-        AssertUp.isTrue(address == null || address.equals("*") || validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
+//        AssertUp.isTrue(address == null || address.equals("*") || validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
 
         String x = StringUtils.isEmpty(address) ? "*" : address;
+        System.out.println("address="+address);
         Object object = http.engine("omni_listtransactions",
                 Object.class,
                 x,
-                99999,
+                10,
                 0,
                 0,
                 999999999);
@@ -566,6 +568,7 @@ public class OmniCoreDao {
         try {
             return mapper.readValue(JSON.toJSONString(object), typeReference);
         } catch (IOException e) {
+            log.error("IOException",e.getMessage());
             e.printStackTrace();
             return null;
         }

@@ -22,7 +22,8 @@ import java.util.Map;
 @Slf4j
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class RpcHttpUtil {
-    private static final String RPC_HOST = "http://47.52.103.44";
+    private static final String RPC_HOST = "http://127.0.0.1";
+//    private static final String RPC_HOST = "http://47.52.103.44";
     private static final String RPC_PORT = "8332";
     private static final String URL = RPC_HOST + ":" + RPC_PORT;
     private JsonRpcHttpClient mClient;

@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 
+@RestController
 public class AssetController {
     @Autowired
     OmniCoreDao omniCoreDao;
@@ -20,11 +22,23 @@ public class AssetController {
         return "test";
     }
 
-    @RequestMapping("/getBalanceU")
-    public String getBalanceUsdt(@RequestParam String address) {
-        OmniTokenBalanceInfoRes omniTokenBalanceInfoRes = omniCoreDao.getBalanceByAddAndId(address, 1);
-        String str = JSONObject.toJSONString(omniTokenBalanceInfoRes);//fastjson默认转换是不序列化null值对应的key的
+    @RequestMapping("/getInfo")
+    public String getInfo() {
+        String str = JSONObject.toJSONString(omniCoreDao.getOmniInfo().toString());//fastjson默认转换是不序列化null值对应的key的
         return str;
+    }
+
+    @RequestMapping("/getOmniTransaction")
+    public String getOmniTransaction(@RequestParam String tx) {
+        String str = JSONObject.toJSONString(omniCoreDao.getOmniTransaction(tx).toString());//fastjson默认转换是不序列化null值对应的key的
+        return str;
+    }
+
+    @RequestMapping("/getBalanceU")
+    public String getBalanceU(@RequestParam String address) {
+        OmniTokenBalanceInfoRes omniTokenBalanceInfoRes = omniCoreDao.getBalanceByAddAndId(address, 31);
+//        String str = JSONObject.toJSONString(omniTokenBalanceInfoRes);//fastjson默认转换是不序列化null值对应的key的
+        return omniTokenBalanceInfoRes.toString();
     }
 
     @RequestMapping("/getUTransantList")

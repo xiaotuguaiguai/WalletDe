@@ -24,7 +24,6 @@ public class TimeJob {
 
     @Scheduled(fixedRate = 1000 * 10)
     public void runsecend(){
-        log.info(String.format("充值：%s", 1));
 //        getImportInfo();
     }
     public void getImportInfo() {

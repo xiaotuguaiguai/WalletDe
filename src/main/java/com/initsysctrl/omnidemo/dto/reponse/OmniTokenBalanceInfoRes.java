@@ -1,5 +1,6 @@
 package com.initsysctrl.omnidemo.dto.reponse;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
  * @create: 2018-09-05 18:07
  **/
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OmniTokenBalanceInfoRes {
     /**
      * 根据地址和id共同查询的结果
