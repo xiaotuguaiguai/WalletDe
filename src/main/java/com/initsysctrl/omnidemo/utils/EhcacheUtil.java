@@ -27,7 +27,6 @@ public class EhcacheUtil {
     }
 
     public void put(String cacheName, String key, Object value) {
-        System.out.println("putput");
         Cache cache = manager.getCache(cacheName);
         Element element = new Element(key, value);
         cache.put(element);
@@ -47,11 +46,6 @@ public class EhcacheUtil {
     public void remove(String cacheName, String key) {
         Cache cache = manager.getCache(cacheName);
         cache.remove(key);
-        cache.flush();
-    }
-    public void removeAll(String cacheName) {
-        Cache cache = manager.getCache(cacheName);
-        cache.removeAll();
         cache.flush();
     }
 

@@ -35,8 +35,10 @@ public class TimeJob {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (StringUtils.isEmpty(height)) {
+        if (StringUtils.isEmpty(height) || height.equals("null")) {
             height = 600000 + "";
+        }else{
+            height= (Long.parseLong(height)+1)+"";
         }
         getData(height);
     }
@@ -44,7 +46,7 @@ public class TimeJob {
     private void getData(String height) {
         List<ReceiveBean> cacheBean = null;
         try {
-            cacheBean = (List<ReceiveBean>) EhcacheUtil.getInstance().get("ehcacheGO").get(height).getObjectValue();
+            cacheBean = (List<ReceiveBean>) EhcacheUtil.getInstance().get("ehcacheGO").get("unDealList").getObjectValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -60,26 +62,25 @@ public class TimeJob {
                 OmniTransactionRes omniTransactionRes = omniCoreDao.getOmniTransaction(mList.get(i));
                 if (omniTransactionRes.isValid() && omniTransactionRes.getPropertyid() == 31) {
                     if (omniTransactionRes.getReferenceaddress().equals(Const.MY_ADDRESS)) {
-                        reveiveBean.setSendAddress(omniTransactionRes.getReferenceaddress());
+                        reveiveBean.setSendAddress(omniTransactionRes.getSendingaddress());
                         reveiveBean.setSendAmount(omniTransactionRes.getAmount());
                         reveiveBean.setBlockHeight(omniTransactionRes.getBlock() + "");
-                        reveiveBean.setTxHash(omniTransactionRes.getBlockhash());
+                        reveiveBean.setTxHash(omniTransactionRes.getTxid());
                         beanList.add(reveiveBean);
                     }
                 }
-                insertData(height, beanList);
+                insertData(beanList);
                 insertData(height);
             }
         }
     }
 
-    private String insertData(String height, List<ReceiveBean> bean) {
-        EhcacheUtil.getInstance().put("ehcacheGO", height + "", bean);
+    private String insertData( List<ReceiveBean> bean) {
+        EhcacheUtil.getInstance().put("ehcacheGO",  "unDealList", bean);
         return bean.toString();
     }
 
     private void insertData(String height) {
         EhcacheUtil.getInstance().put("ehcacheHeight", "blockHeight", height);
-        log.info("height", height);
     }
 }

@@ -98,15 +98,16 @@ public class AssetController {
     }
 
     @RequestMapping("/selectData")
-    public String selectData(@RequestParam("height") String height) {
-        List<ReceiveBean> bean = (List<ReceiveBean>) EhcacheUtil.getInstance().get("ehcacheGO").get(height).getObjectValue();
+    public String selectData() {
+        List<ReceiveBean> bean = (List<ReceiveBean>) EhcacheUtil.getInstance().get("ehcacheGO").get("unDealList").getObjectValue();
         String str = JSONObject.toJSONString(bean);
         return str;
     }
 
     @RequestMapping("/clearData")
     public String clearData() {
-        EhcacheUtil.getInstance().removeAll("ehcacheGO");
+        EhcacheUtil.getInstance().remove("ehcacheGO","unDealList");
+        EhcacheUtil.getInstance().remove("ehcacheHeight","blockHeight");
         return "true";
     }
 
