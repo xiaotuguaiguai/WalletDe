@@ -3,8 +3,8 @@
          xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
 
     <!-- 磁盘缓存位置 -->
-    <!--<diskStore path="java.io.tmpdir/ehcache"/>-->
-    <diskStore path="D:\elcache"/>
+    <diskStore path="java.io.tmpdir/ehcache"/>
+    <!--<diskStore path="D:\elcache"/>-->
 
     <!-- 默认缓存 -->
     <defaultCache
@@ -20,6 +20,19 @@
 
     <!-- 测试 -->
     <cache name="ehcacheGO"
+           maxElementsInMemory="1"
+           eternal="false"
+           timeToIdleSeconds="2400"
+           timeToLiveSeconds="2400"
+           maxEntriesLocalHeap="10000"
+           maxEntriesLocalDisk="10000000"
+           diskPersistent="true"
+           clearOnFlush="false"
+           diskExpiryThreadIntervalSeconds="120"
+           overflowToDisk="true"
+           memoryStoreEvictionPolicy="LRU">
+    </cache>
+    <cache name="ehcacheHeight"
            maxElementsInMemory="1"
            eternal="false"
            timeToIdleSeconds="2400"

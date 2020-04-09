@@ -7,6 +7,8 @@ import com.initsysctrl.omnidemo.dto.reponse.OmniTokenBalanceInfoRes;
 import com.initsysctrl.omnidemo.dto.reponse.OmniTransactionRes;
 import com.initsysctrl.omnidemo.utils.Const;
 import com.initsysctrl.omnidemo.utils.EhcacheUtil;
+import lombok.extern.slf4j.Slf4j;
+import net.sf.ehcache.CacheException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Slf4j
 public class AssetController {
     @Autowired
     OmniCoreDao omniCoreDao;
@@ -64,9 +67,15 @@ public class AssetController {
     @RequestMapping("/listAllMyTransactions")
     public String listAllMyTransactions(@RequestParam String height) {
 
-        List<ReceiveBean> cacheBean = (List<ReceiveBean>)EhcacheUtil.getInstance().get("ehcacheGO").get(height).getObjectValue();
+        List<ReceiveBean> cacheBean = null;
+        try {
+            cacheBean = (List<ReceiveBean>) EhcacheUtil.getInstance().get("ehcacheGO").get(height).getObjectValue();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         List<ReceiveBean> beanList = new ArrayList<>();
-        if(cacheBean!=null && cacheBean.size()!=0){
+
+        if (cacheBean != null && cacheBean.size() != 0) {
             beanList.addAll(cacheBean);
         }
         List<String> mList = omniCoreDao.listBlockTransactions(Long.parseLong(height));
@@ -82,16 +91,23 @@ public class AssetController {
                     beanList.add(reveiveBean);
                 }
             }
-            insertData(height,beanList);
+            insertData(height, beanList);
+            insertData(height);
         }
         return "true";
     }
 
     @RequestMapping("/selectData")
     public String selectData(@RequestParam("height") String height) {
-        List<ReceiveBean> bean = ( List<ReceiveBean>)EhcacheUtil.getInstance().get("ehcacheGO").get(height).getObjectValue();
+        List<ReceiveBean> bean = (List<ReceiveBean>) EhcacheUtil.getInstance().get("ehcacheGO").get(height).getObjectValue();
         String str = JSONObject.toJSONString(bean);
         return str;
+    }
+
+    @RequestMapping("/clearData")
+    public String clearData() {
+        EhcacheUtil.getInstance().removeAll("ehcacheGO");
+        return "true";
     }
 
     @RequestMapping("/saveData")
@@ -101,9 +117,19 @@ public class AssetController {
         return bean.toString();
     }
 
+    @RequestMapping("/selectHeight")
+    public String selectHeight() {
+       String height= EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight")+"";
+        return height+"";
+    }
+
     public String insertData(String height, List<ReceiveBean> bean) {
-        EhcacheUtil.getInstance().put("ehcacheGO",height+"", bean);
+        EhcacheUtil.getInstance().put("ehcacheGO", height + "", bean);
         return bean.toString();
+    }
+
+    public void insertData(String height) {
+        EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",height);
     }
 
     @RequestMapping("/listBlockTransactions")
