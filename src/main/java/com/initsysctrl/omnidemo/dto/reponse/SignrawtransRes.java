@@ -1,5 +1,6 @@
 package com.initsysctrl.omnidemo.dto.reponse;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
  * @create: 2018-10-22 10:58
  **/
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SignrawtransRes {
 
 

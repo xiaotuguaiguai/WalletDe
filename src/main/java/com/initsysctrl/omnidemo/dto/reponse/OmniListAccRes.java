@@ -1,5 +1,6 @@
 package com.initsysctrl.omnidemo.dto.reponse;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.util.Map;
  * @create: 2018/9/4 下午6:29
  **/
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OmniListAccRes {
 
     public Map<String, BigDecimal> result;

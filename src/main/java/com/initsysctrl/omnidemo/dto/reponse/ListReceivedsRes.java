@@ -1,5 +1,6 @@
 package com.initsysctrl.omnidemo.dto.reponse;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  * @create: 2018-09-10 19:16
  **/
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ListReceivedsRes {
 
 

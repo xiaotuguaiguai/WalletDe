@@ -9,6 +9,7 @@
 
     <!-- 定义日志存储的路径，不要配置相对路径 -->
     <property name="FILE_PATH" value="/opt/tmp/spring-log.%d{yyyy-MM-dd}.%i.log" />
+    <!--<property name="FILE_PATH" value="/Users/quanlun/Desktop/sci/spring-log.%d{yyyy-MM-dd}.%i.log" />-->
 
     <!-- 控制台输出日志 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">

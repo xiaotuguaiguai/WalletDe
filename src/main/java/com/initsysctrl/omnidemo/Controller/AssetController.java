@@ -1,10 +1,12 @@
 package com.initsysctrl.omnidemo.Controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.initsysctrl.omnidemo.dao.OmniCoreDao;
 import com.initsysctrl.omnidemo.dto.ReceiveBean;
 import com.initsysctrl.omnidemo.dto.reponse.OmniTokenBalanceInfoRes;
 import com.initsysctrl.omnidemo.dto.reponse.OmniTransactionRes;
+import com.initsysctrl.omnidemo.dto.reponse.SendUsdtResponse;
 import com.initsysctrl.omnidemo.utils.Const;
 import com.initsysctrl.omnidemo.utils.EhcacheUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +28,27 @@ public class AssetController {
     OmniCoreDao omniCoreDao;
 
 
+
+
     @RequestMapping("/test")
     public String test() {
         return "test";
+    }
+
+    @RequestMapping("/getBBalance")
+    public String getBBalance(@RequestParam  String address) {
+        return omniCoreDao.getBalance(address);
+    }
+
+    @RequestMapping("/getBInfo")
+    public String getBInfo(@RequestParam  String address) {
+        return omniCoreDao.getAccountByAddress(address);
+    }
+
+    @RequestMapping("/sendB")
+    public String sendB(@RequestParam String toAddress,@RequestParam  double num) {
+        System.out.println("toAddress="+toAddress+" || num="+num);
+       return omniCoreDao.sendBtc("1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze",toAddress,num);
     }
 
     @RequestMapping("/getInfo")
@@ -94,6 +114,9 @@ public class AssetController {
             insertData(height, beanList);
             insertData(height);
         }
+        if(beanList!=null){
+
+        }
         return "true";
     }
 
@@ -103,6 +126,12 @@ public class AssetController {
         String str = JSONObject.toJSONString(bean);
         return str;
     }
+
+//    @RequestMapping("/changeAddress")
+//    public String changeAddress(@RequestParam String address) {
+//        Const.MY_ADDRESS = address;
+//        return Const.MY_ADDRESS ;
+//    }
 
     @RequestMapping("/clearData")
     public String clearData() {
@@ -116,6 +145,13 @@ public class AssetController {
         List<ReceiveBean> bean = new ArrayList<>();
         EhcacheUtil.getInstance().put("ehcacheGO", Const.BLOCK_HEIGHT, bean);
         return bean.toString();
+    }
+
+    @RequestMapping("/insertHeight")
+    public String insertHeight(@RequestParam String height) {
+        EhcacheUtil.getInstance().remove("ehcacheHeight","blockHeight");
+        EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",height);
+        return selectHeight();
     }
 
     @RequestMapping("/selectHeight")
@@ -141,14 +177,28 @@ public class AssetController {
         return omniCoreDao.listBlockTransactions(Long.parseLong(height)).toString();
     }
 
+
+
     @RequestMapping("/sendU")
     public String sendU(@RequestParam String toAddress, @RequestParam String num) {
-        return omniCoreDao.sendOmniToken(
-                "mgmNSxhyBifCfaaoKmvMMVGdpRSpBBA87G",//5.8,0.2
+        SendUsdtResponse response = new SendUsdtResponse();
+
+        String res= omniCoreDao.sendOmniToken(
+                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb",//5.8,0.2
                 toAddress,//0
-                1,
+                31,
                 new BigDecimal(num),
-                "mgmNSxhyBifCfaaoKmvMMVGdpRSpBBA87G");
+                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb");
+        if(res!=null ){
+            response.setMsg("成功");
+            response.setHash(res);
+            response.setStatus(0);
+        }else{
+            response.setMsg("失败");
+            response.setHash("null");
+            response.setStatus(1);
+        }
+        return JSON.toJSONString(response);
     }
 
 }

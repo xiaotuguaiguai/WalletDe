@@ -7,6 +7,15 @@ public class ReceiveBean implements Serializable {
     private String sendAmount;
     private String txHash;
     private String blockHeight;
+    private boolean isFaile;
+
+    public boolean isFaile() {
+        return isFaile;
+    }
+
+    public void setFaile(boolean faile) {
+        isFaile = faile;
+    }
 
     public String getSendAddress() {
         return sendAddress;

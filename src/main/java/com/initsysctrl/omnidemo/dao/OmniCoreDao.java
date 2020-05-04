@@ -79,19 +79,19 @@ public class OmniCoreDao {
 
     @SuppressWarnings("UnnecessaryLocalVariable")
     public String sendBtcBatch(String fromAddress, HashMap<String, Double> outs) {
-        AssertUp.isTrue(validateAddress(fromAddress).isIsvalid(), E.ADDRESS_ERROR);
+//        AssertUp.isTrue(validateAddress(fromAddress).isIsvalid(), E.ADDRESS_ERROR);
         Double sumAmount = 0.0;//转出的和
         for (Map.Entry<String, Double> entry : outs.entrySet()) {
             String address = entry.getKey();
             Double amount = entry.getValue();
-            AssertUp.isTrue(validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
-            AssertUp.isTrue(amount != null && amount > 0, E.AMOUNT_INPUT_EEROR);
+//            AssertUp.isTrue(validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
+//            AssertUp.isTrue(amount != null && amount > 0, E.AMOUNT_INPUT_EEROR);
             sumAmount += amount;
         }
         BigDecimal _amount = new BigDecimal(sumAmount.toString());
         BigDecimal _fee = new BigDecimal("0.0001");
         List<UnspentRes> unspentRes = listUnSpent(fromAddress);
-        AssertUp.isTrue(!unspentRes.isEmpty(), BLANCE_ENOUTH_ERROR);
+//        AssertUp.isTrue(!unspentRes.isEmpty(), BLANCE_ENOUTH_ERROR);
         log.warn(unspentRes.toString());
         Double sumUtxo = 0.0;
         ArrayList<BaseUtxo> input = new ArrayList<>();
@@ -106,7 +106,7 @@ public class OmniCoreDao {
         BigDecimal _sum = new BigDecimal(sumUtxo.toString());
 //       输入 >输出+手续费
 //        输入=输出+手续+找零
-        AssertUp.isTrue(sumUtxo >= (sumAmount + _fee.doubleValue()), BLANCE_ENOUTH_ERROR);
+//        AssertUp.isTrue(sumUtxo >= (sumAmount + _fee.doubleValue()), BLANCE_ENOUTH_ERROR);
         log.warn(input.toString());
 //        最终的输出output
         HashMap<String, Double> output = new HashMap<>(outs);
@@ -116,15 +116,15 @@ public class OmniCoreDao {
         //创建交易
         String createrawtransaction = http.engine("createrawtransaction", String.class, input, output);
         log.warn("createrawtransaction" + createrawtransaction);
-        AssertUp.isTrue(createrawtransaction != null, "创建交易失败");
+//        AssertUp.isTrue(createrawtransaction != null, "创建交易失败");
         //签名交易
         SignrawtransRes signrawtransaction = http.engine("signrawtransaction", SignrawtransRes.class, createrawtransaction);
         log.warn("signrawtransaction" + signrawtransaction);
-        AssertUp.isTrue(signrawtransaction != null, "签名失败");
+//        AssertUp.isTrue(signrawtransaction != null, "签名失败");
         //广播交易
         String sendrawtransaction = http.engine("sendrawtransaction", String.class, signrawtransaction.getHex());
         log.warn("sendrawtransaction" + sendrawtransaction);
-        AssertUp.isTrue(sendrawtransaction != null, "广播交易失败");
+//        AssertUp.isTrue(sendrawtransaction != null, "广播交易失败");
         return sendrawtransaction;//返回事务哈希
     }
 
@@ -167,7 +167,7 @@ public class OmniCoreDao {
      * @return: com.leazxl.bs.dto.BaseRPCresponse<java.lang.String>
      **/
     public String getAccountByAddress(String address) {
-        AssertUp.isTrue(validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
+//        AssertUp.isTrue(validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
         return http.engine("getaccount", String.class, address);
     }
 
@@ -177,12 +177,13 @@ public class OmniCoreDao {
      * @param: [account]
      * @return: java.lang.String
      **/
-    public String getBalance( java.lang.String account) {
-        if (StringUtils.isEmpty(account)) {
-            return http.engine("getbalance", String.class);
-        } else {
-            return http.engine("getbalance", account);
-        }
+    public String getBalance(String account) {
+        log.warn("account="+account);
+//        if (StringUtils.isEmpty(account)) {
+            return http.engine("getbalance", String.class,"*");
+//        } else {
+//            return http.engine("getbalance",account);
+//        }
     }
 
     /***
@@ -201,20 +202,26 @@ public class OmniCoreDao {
      * @return: void
      **/
     public List<UnspentRes> listUnSpent( String address) {
-        AssertUp.isTrue(address == null || validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
+//        AssertUp.isTrue(address == null || validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
         Object result;
+
         if (StringUtils.isEmpty(address)) {
             result = http.engine("listunspent", Object.class);
         } else {
+            System.out.println("address======"+address);
+            log.warn("address="+address);
             Object[] parms = {1, 999999, new java.lang.String[]{address}};//最小确认，最大确认
+
             result = http.engine("listunspent", Object.class, parms);
         }
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<UnspentRes>> typeReference = new TypeReference<List<UnspentRes>>() {
         };
         try {
+            log.warn("listUnSpent1111="+result);
             return mapper.readValue(JSON.toJSONString(result), typeReference);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            log.error("listUnSpent="+e.getMessage());
             e.printStackTrace();
             return null;
         }
