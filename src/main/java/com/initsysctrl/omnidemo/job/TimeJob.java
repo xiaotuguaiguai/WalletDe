@@ -38,6 +38,7 @@ public class TimeJob {
         String height = null;
         try {
             height = EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight") + "";
+            log.warn("block height is "+height);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -11,8 +11,11 @@ import com.initsysctrl.omnidemo.dto.SimpleUtxo;
 import com.initsysctrl.omnidemo.dto.reponse.*;
 import com.initsysctrl.omnidemo.exception.E;
 import com.initsysctrl.omnidemo.utils.AssertUp;
+import com.initsysctrl.omnidemo.utils.OkHttpUtils;
 import com.initsysctrl.omnidemo.utils.RpcHttpUtil;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -208,7 +211,6 @@ public class OmniCoreDao {
         if (StringUtils.isEmpty(address)) {
             result = http.engine("listunspent", Object.class);
         } else {
-            System.out.println("address======"+address);
             log.warn("address="+address);
             Object[] parms = {1, 999999, new java.lang.String[]{address}};//最小确认，最大确认
 
@@ -227,6 +229,25 @@ public class OmniCoreDao {
         }
     }
 
+
+    public List<UnspendRes2.UnspentOutputsBean> listUnSpent2(String address) {
+        String url = "https://blockchain.info/unspent?active="+address;
+        final Request request = new Request.Builder().get().url(url).build();
+        try(Response response = OkHttpUtils.getInstance().newCall(request).execute()) {
+            String result = response.body().string();
+            if(!StringUtils.isEmpty(result)){
+                UnspendRes2 unspendRes2 = com.alibaba.fastjson.JSON.parseObject(result,UnspendRes2.class);
+                if(unspendRes2!=null && unspendRes2.getUnspent_outputs()!=null ){
+                    return unspendRes2.getUnspent_outputs();
+                }
+            }else{
+                return null;
+            }
+        }catch (Exception e){
+            return null;
+        }
+        return null;
+    }
 
     /***
      * 获取钱包内比特币地址信息列表
@@ -403,7 +424,7 @@ public class OmniCoreDao {
         /**第一步，列出formeaddress,feeaddress上的utxo **/
         double fee = 0.00005;
         List<UnspentRes> unspentRes1 = listUnSpent(fromaddress);
-        AssertUp.isTrue(unspentRes1 != null && !unspentRes1.isEmpty(), E.FEE_NOT_ENOUGH);
+//        AssertUp.isTrue(unspentRes1 != null && !unspentRes1.isEmpty(), E.FEE_NOT_ENOUGH);
         log.warn(unspentRes1.toString());
 
         UnspentRes utxo1 = null;
@@ -414,11 +435,11 @@ public class OmniCoreDao {
             }
         }
         log.warn(utxo1 == null ? "null" : utxo1.toString());
-        AssertUp.isTrue(utxo1 != null, E.FEE_NOT_ENOUGH);
+//        AssertUp.isTrue(utxo1 != null, E.FEE_NOT_ENOUGH);
 
 
         List<UnspentRes> unspentRes2 = listUnSpent(feeaddress);
-        AssertUp.isTrue(unspentRes2 != null && !unspentRes2.isEmpty(), E.FEE_NOT_ENOUGH);
+//        AssertUp.isTrue(unspentRes2 != null && !unspentRes2.isEmpty(), E.FEE_NOT_ENOUGH);
         log.warn(unspentRes2.toString());
         UnspentRes utxo2 = null;
         for (UnspentRes un : unspentRes2) {
@@ -428,7 +449,7 @@ public class OmniCoreDao {
             }
         }
         log.warn(utxo2 == null ? "null" : utxo2.toString());
-        AssertUp.isTrue(utxo2 != null, E.FEE_NOT_ENOUGH);
+//        AssertUp.isTrue(utxo2 != null, E.FEE_NOT_ENOUGH);
 
         /**第二步：构造发送代币类型和代币数量数据**/
         String simplesend = http.engine("omni_createpayload_simplesend", String.class, propertyid, amount.toString());
@@ -442,17 +463,17 @@ public class OmniCoreDao {
         HashMap<String, Double> outputs = new HashMap<>();
         String createrawtransaction = http.engine("createrawtransaction", String.class, inputs, outputs);
         log.warn(createrawtransaction == null ? "createrawtransaction==null" : "createrawtransactio=" + createrawtransaction);
-        AssertUp.isTrue(createrawtransaction != null, "createrawtransaction==null");
+//        AssertUp.isTrue(createrawtransaction != null, "createrawtransaction==null");
 
         /***第四步：.在交易数据中加上omni代币数据,从第2步获取有效负载，从第3步获取基本事务。**/
         String createrawtxOpreturn = http.engine("omni_createrawtx_opreturn", String.class, createrawtransaction, simplesend);
         log.warn(createrawtxOpreturn == null ? "createrawtxOpreturn==null" : "createrawtxOpreturn=" + createrawtxOpreturn);
-        AssertUp.isTrue(createrawtxOpreturn != null, "createrawtxOpreturn==null");
+//        AssertUp.isTrue(createrawtxOpreturn != null, "createrawtxOpreturn==null");
 
         /**第五步：在交易数据上加上接收地址，从步骤4获取扩展事务，并将参考输出添加到"接受地址"，它将成为令牌的接收者。**/
         String createrawtxReference = http.engine("omni_createrawtx_reference", String.class, createrawtxOpreturn, toaddress);
         log.warn(createrawtxReference == null ? "createrawtxReference==null" : "createrawtxReference" + createrawtxReference);
-        AssertUp.isTrue(createrawtxReference != null, " createrawtxReference ==null");
+//        AssertUp.isTrue(createrawtxReference != null, " createrawtxReference ==null");
 
         /**第六步：指定矿工费并附加变更输出（根据需要）**/
 
@@ -463,19 +484,98 @@ public class OmniCoreDao {
         list.add(simpleUtxo2);
 
         String createrawtxChange = http.engine("omni_createrawtx_change", String.class, createrawtxReference, list, feeaddress, fee);
-        AssertUp.isTrue(createrawtxChange != null, " createrawtxChange ==null");
+//        AssertUp.isTrue(createrawtxChange != null, " createrawtxChange ==null");
 
         /**第七步：签署交易**/
         SignrawtransRes signrawtransRes = http.engine("signrawtransaction", SignrawtransRes.class, createrawtxChange);
         log.warn(signrawtransRes == null ? "signrawtransRes==null" : "signrawtransRes=" + signrawtransRes);
-        AssertUp.isTrue(signrawtransRes != null && signrawtransRes.getHex() != null, " signrawtransRes ==null");
+//        AssertUp.isTrue(signrawtransRes != null && signrawtransRes.getHex() != null, " signrawtransRes ==null");
 
         /**第八步：广播交易**/
         String sendrawtransaction = http.engine("sendrawtransaction", String.class, signrawtransRes.getHex());
         log.warn(sendrawtransaction == null ? "sendrawtransaction==null" : "sendrawtransaction=" + sendrawtransaction);
-        AssertUp.isTrue(sendrawtransaction != null, " sendrawtransaction ==null");
+//        AssertUp.isTrue(sendrawtransaction != null, " sendrawtransaction ==null");
         return sendrawtransaction;
     }
+
+    public String sendOmniTokenRaw2(String fromaddress, String toaddress, long propertyid, BigDecimal amount, String feeaddress) {
+        /**第一步，列出formeaddress,feeaddress上的utxo **/
+        double fee = 0.00005;
+        List<UnspendRes2.UnspentOutputsBean> unspentRes1 = listUnSpent2(fromaddress);
+//        AssertUp.isTrue(unspentRes1 != null && !unspentRes1.isEmpty(), E.FEE_NOT_ENOUGH);
+        log.warn(unspentRes1.toString());
+
+        UnspendRes2.UnspentOutputsBean  utxo1 = null;
+        for (UnspendRes2.UnspentOutputsBean un : unspentRes1) {
+            if (un.getConfirmations() >= 1) {
+                utxo1 = un;
+                break;
+            }
+        }
+        log.warn(utxo1 == null ? "null" : utxo1.toString());
+//        AssertUp.isTrue(utxo1 != null, E.FEE_NOT_ENOUGH);
+
+
+//        List<UnspentRes> unspentRes2 = listUnSpent(feeaddress);
+////        AssertUp.isTrue(unspentRes2 != null && !unspentRes2.isEmpty(), E.FEE_NOT_ENOUGH);
+//        log.warn(unspentRes2.toString());
+//        UnspentRes utxo2 = null;
+//        for (UnspentRes un : unspentRes2) {
+//            if (un.getAmount() >= fee && un.isSpendable() && un.getConfirmations() >= 2) {
+//                utxo2 = un;
+//                break;
+//            }
+//        }
+//        log.warn(utxo2 == null ? "null" : utxo2.toString());
+//        AssertUp.isTrue(utxo2 != null, E.FEE_NOT_ENOUGH);
+
+        /**第二步：构造发送代币类型和代币数量数据**/
+        String simplesend = http.engine("omni_createpayload_simplesend", String.class, propertyid, amount.toString());
+
+        /**第三步：构造交易基本数据（transaction base） https://bitcoin.org/en/developer-reference#createmultisig**/
+        BaseUtxo baseUtxo1 = new BaseUtxo(utxo1.getTx_hash(), utxo1.getTx_output_n());
+        BaseUtxo baseUtxo2 = new BaseUtxo(utxo1.getTx_hash(), utxo1.getTx_output_n());
+        ArrayList<BaseUtxo> inputs = new ArrayList<>();
+        inputs.add(baseUtxo1);
+        inputs.add(baseUtxo2);
+        HashMap<String, Double> outputs = new HashMap<>();
+        String createrawtransaction = http.engine("createrawtransaction", String.class, inputs, outputs);
+        log.warn(createrawtransaction == null ? "createrawtransaction==null" : "createrawtransactio=" + createrawtransaction);
+//        AssertUp.isTrue(createrawtransaction != null, "createrawtransaction==null");
+
+        /***第四步：.在交易数据中加上omni代币数据,从第2步获取有效负载，从第3步获取基本事务。**/
+        String createrawtxOpreturn = http.engine("omni_createrawtx_opreturn", String.class, createrawtransaction, simplesend);
+        log.warn(createrawtxOpreturn == null ? "createrawtxOpreturn==null" : "createrawtxOpreturn=" + createrawtxOpreturn);
+//        AssertUp.isTrue(createrawtxOpreturn != null, "createrawtxOpreturn==null");
+
+        /**第五步：在交易数据上加上接收地址，从步骤4获取扩展事务，并将参考输出添加到"接受地址"，它将成为令牌的接收者。**/
+        String createrawtxReference = http.engine("omni_createrawtx_reference", String.class, createrawtxOpreturn, toaddress);
+        log.warn(createrawtxReference == null ? "createrawtxReference==null" : "createrawtxReference" + createrawtxReference);
+//        AssertUp.isTrue(createrawtxReference != null, " createrawtxReference ==null");
+
+        /**第六步：指定矿工费并附加变更输出（根据需要）**/
+
+        SimpleUtxo simpleUtxo1 = new SimpleUtxo(utxo1.getTx_hash(), utxo1.getTx_index(), utxo1.getScript(), utxo1.getValue());
+        SimpleUtxo simpleUtxo2 = new SimpleUtxo(utxo1.getTx_hash(), utxo1.getTx_index(), utxo1.getScript(), utxo1.getValue());
+        ArrayList<SimpleUtxo> list = new ArrayList<>();
+        list.add(simpleUtxo1);
+        list.add(simpleUtxo2);
+
+        String createrawtxChange = http.engine("omni_createrawtx_change", String.class, createrawtxReference, list, feeaddress, fee);
+//        AssertUp.isTrue(createrawtxChange != null, " createrawtxChange ==null");
+
+        /**第七步：签署交易**/
+        SignrawtransRes signrawtransRes = http.engine("signrawtransaction", SignrawtransRes.class, createrawtxChange);
+        log.warn(signrawtransRes == null ? "signrawtransRes==null" : "signrawtransRes=" + signrawtransRes);
+//        AssertUp.isTrue(signrawtransRes != null && signrawtransRes.getHex() != null, " signrawtransRes ==null");
+
+        /**第八步：广播交易**/
+        String sendrawtransaction = http.engine("sendrawtransaction", String.class, signrawtransRes.getHex());
+        log.warn(sendrawtransaction == null ? "sendrawtransaction==null" : "sendrawtransaction=" + sendrawtransaction);
+//        AssertUp.isTrue(sendrawtransaction != null, " sendrawtransaction ==null");
+        return sendrawtransaction;
+    }
+
 
     /***
      * 创建并发送将给定生态系统中的所有可用令牌传输给收件人的事务，全部发送

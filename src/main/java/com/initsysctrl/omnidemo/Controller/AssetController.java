@@ -201,4 +201,54 @@ public class AssetController {
         return JSON.toJSONString(response);
     }
 
+
+    @RequestMapping("/sendU3")
+    public String sendU3(@RequestParam String fromAddress,@RequestParam String toAddress, @RequestParam String num) {
+        SendUsdtResponse response = new SendUsdtResponse();
+
+        String res= omniCoreDao.sendOmniTokenRaw(
+                fromAddress,//5.8,0.2
+                toAddress,//0
+                31,
+                new BigDecimal(num),
+                fromAddress);
+        if(res!=null ){
+            response.setMsg("成功");
+            response.setHash(res);
+            response.setStatus(0);
+        }else{
+            response.setMsg("失败");
+            response.setHash("null");
+            response.setStatus(1);
+        }
+        return JSON.toJSONString(response);
+    }
+
+    @RequestMapping("/listUnSpent")
+    public String listUnSpent(@RequestParam String address){
+        return omniCoreDao.listUnSpent(address).toString();
+    }
+
+    @RequestMapping("/sendU2")
+    public String sendU2(@RequestParam String fromAddress, @RequestParam String toAddress, @RequestParam String num) {
+        SendUsdtResponse response = new SendUsdtResponse();
+
+        String res= omniCoreDao.sendOmniToken(
+                fromAddress,//5.8,0.2
+                toAddress,//0
+                31,
+                new BigDecimal(num),
+                fromAddress);
+        if(res!=null ){
+            response.setMsg("成功");
+            response.setHash(res);
+            response.setStatus(0);
+        }else{
+            response.setMsg("失败");
+            response.setHash("null");
+            response.setStatus(1);
+        }
+        return JSON.toJSONString(response);
+    }
+
 }
