@@ -33,7 +33,7 @@ public class TimeJob {
     @Autowired
     OmniCoreDao omniCoreDao;
 
-    @Scheduled(fixedRate = 1000 * 30)
+    @Scheduled(fixedRate = 1000 * 60)
     public void runsecend() {
         String height = null;
         try {
