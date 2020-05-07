@@ -151,13 +151,14 @@ public class AssetController {
     public String insertHeight(@RequestParam String height) {
         EhcacheUtil.getInstance().remove("ehcacheHeight","blockHeight");
         EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",height);
+        Const.BLOCK_HEIGHT_NOW = height;
         return selectHeight();
     }
 
     @RequestMapping("/selectHeight")
     public String selectHeight() {
        String height= EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight")+"";
-        return height+"";
+        return height+" || "+Const.BLOCK_HEIGHT_NOW;
     }
 
     public String insertData(String height, List<ReceiveBean> bean) {

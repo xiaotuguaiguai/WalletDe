@@ -33,19 +33,29 @@ public class TimeJob {
     @Autowired
     OmniCoreDao omniCoreDao;
 
-    @Scheduled(fixedRate = 1000 * 60)
+    @Scheduled(fixedRate = 1000 * 10)
     public void runsecend() {
         String height = null;
-        try {
-            height = EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight") + "";
-            log.warn("block height is "+height);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (Const.BLOCK_HEIGHT_NOW != null && !Const.BLOCK_HEIGHT_NOW.equals("")) {
+            height = Const.BLOCK_HEIGHT_NOW;
+           String aa= EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight")+"" ;
+           if(StringUtils.isEmpty(aa)){
+                insertData(height);
+           }
+        } else {
+            try {
+                height = EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight") + "";
+                log.warn("block height is " + height);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
         if (StringUtils.isEmpty(height) || height.equals("null")) {
             log.error("block height is null");
-        }else{
-            height= (Long.parseLong(height)+1)+"";
+        } else {
+            height = (Long.parseLong(height) + 1) + "";
+            Const.BLOCK_HEIGHT_NOW = height;
             getData(height);
         }
 
@@ -54,19 +64,19 @@ public class TimeJob {
     private void getData(String height) {
         List<ReceiveBean> cacheBean = null;
         try {
-            cacheBean = (List<ReceiveBean>) EhcacheUtil.getInstance().get("ehcacheGO").get("unDealList").getObjectValue();
+            if(EhcacheUtil.getInstance().get("ehcacheGO")!=null &&  EhcacheUtil.getInstance().get("ehcacheGO").get("unDealList")!=null ){
+                cacheBean = (List<ReceiveBean>) EhcacheUtil.getInstance().get("ehcacheGO").get("unDealList").getObjectValue();
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("get unDealList error="+e.getMessage());
+            log.error("get unDealList error=" + e.getMessage());
         }
         List<ReceiveBean> beanList = new ArrayList<>();
 
         if (cacheBean != null && cacheBean.size() != 0) {
             beanList.addAll(cacheBean);
         }
-
         List<String> mList = omniCoreDao.listBlockTransactions(Long.parseLong(height));
-
         if (mList != null && mList.size() != 0) {
             for (int i = 0; i < mList.size(); i++) {
                 ReceiveBean reveiveBean = new ReceiveBean();
@@ -83,83 +93,86 @@ public class TimeJob {
             }
             insertData(beanList);
             insertData(height);
-            if(beanList!=null && beanList.size()!=0){
-                sendInfo(0,beanList);
+            if (beanList != null && beanList.size() != 0) {
+                sendInfo(0, beanList);
             }
-
         }
     }
 
-    private void sendInfo(int pos,List<ReceiveBean> mlist){
-        String url = Const.server_host+"restful/auditicket/into/"+mlist.get(pos).getSendAddress();
-        RequestBody formBody = new  MultipartBody.Builder()
+    private void sendInfo(int pos, List<ReceiveBean> mlist) {
+        String url = Const.server_host + "restful/auditicket/into/" + mlist.get(pos).getSendAddress();
+        RequestBody formBody = new MultipartBody.Builder()
                 .addFormDataPart("intoAddress", mlist.get(pos).getSendAddress())
                 .addFormDataPart("intoAmount", mlist.get(pos).getSendAmount())
-                .addFormDataPart("intoTime", System.currentTimeMillis()/1000+"")
+                .addFormDataPart("intoTime", System.currentTimeMillis() / 1000 + "")
                 .addFormDataPart("txId", mlist.get(pos).getTxHash())
                 .build();
 
         final Request request = new Request.Builder().url(url).put(formBody).build();
-        try(Response response = OkHttpUtils.getInstance().newCall(request).execute()) {
+        try (Response response = OkHttpUtils.getInstance().newCall(request).execute()) {
             String result = response.body().string();
-            if(!StringUtils.isEmpty(result)){
-                System.out.println(result+"");
+            if (!StringUtils.isEmpty(result)) {
+                System.out.println(result + "");
                 JSONObject serverResBean = com.alibaba.fastjson.JSON.parseObject(result);
-                if(serverResBean.getIntValue("code")==200){
+                if (serverResBean.getIntValue("code") == 200) {
                     System.out.println("code200");
-                    pos=pos+1;
-                    if(pos<mlist.size()){
-                        sendInfo(pos,mlist);
-                    }else{
+                    pos = pos + 1;
+                    if (pos < mlist.size()) {
+                        sendInfo(pos, mlist);
+                    } else {
                         setNewCache(mlist);
                     }
-                }else{
-                    System.out.println("code=="+serverResBean.getIntValue("code"));
+                } else {
+                    System.out.println("code==" + serverResBean.getIntValue("code"));
                     mlist.get(pos).setFaile(true);
-                    pos=pos+1;
-                    if(pos<mlist.size()){
-                        sendInfo(pos,mlist);
-                    }else{
+                    pos = pos + 1;
+                    if (pos < mlist.size()) {
+                        sendInfo(pos, mlist);
+                    } else {
                         setNewCache(mlist);
                     }
                 }
             }
 
-        }catch (Exception e){
-            System.out.println("exception="+e.getMessage());
+        } catch (Exception e) {
+            System.out.println("exception=" + e.getMessage());
             mlist.get(pos).setFaile(true);
-            pos=pos+1;
-            if(pos<mlist.size()){
-                sendInfo(pos,mlist);
-            }else{
+            pos = pos + 1;
+            if (pos < mlist.size()) {
+                sendInfo(pos, mlist);
+            } else {
                 setNewCache(mlist);
             }
         }
 
     }
 
-    private void setNewCache(List<ReceiveBean> mlist){
+    private void setNewCache(List<ReceiveBean> mlist) {
         List<ReceiveBean> mm = new ArrayList<>();
-        for(int i=0;i<mlist.size();i++){
-            if(mlist.get(i).isFaile()){
+        for (int i = 0; i < mlist.size(); i++) {
+            if (mlist.get(i).isFaile()) {
                 mm.add(mlist.get(i));
             }
         }
         clearData();
-        if(mm.size()!=0){
+        if (mm.size() != 0) {
             insertData(mm);
         }
     }
 
-    private String insertData( List<ReceiveBean> bean) {
+    private String insertData(List<ReceiveBean> bean) {
         clearData();
-        EhcacheUtil.getInstance().put("ehcacheGO",  "unDealList", bean);
+        EhcacheUtil.getInstance().put("ehcacheGO", "unDealList", bean);
         return bean.toString();
     }
+
     private void clearData() {
-        EhcacheUtil.getInstance().remove("ehcacheGO","unDealList");
+        EhcacheUtil.getInstance().remove("ehcacheGO", "unDealList");
     }
+
     private void insertData(String height) {
+        log.warn(height);
         EhcacheUtil.getInstance().put("ehcacheHeight", "blockHeight", height);
+        Const.BLOCK_HEIGHT_NOW = height;
     }
 }

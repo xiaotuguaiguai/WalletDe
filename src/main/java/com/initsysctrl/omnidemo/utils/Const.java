@@ -8,4 +8,5 @@ public class Const {
 //    public static String server_host="http://47.244.88.155:9000/boundary_supermor/";
     public static String server_host="http://39.97.245.64:9001/boundary_supermor/";
 
+    public static String BLOCK_HEIGHT_NOW="";
 }
