@@ -206,12 +206,12 @@ public class AssetController {
     public String sendU3(@RequestParam String fromAddress,@RequestParam String toAddress, @RequestParam String num) {
         SendUsdtResponse response = new SendUsdtResponse();
 
-        String res= omniCoreDao.sendOmniTokenRaw(
+        String res= omniCoreDao.sendOmniToken(
                 fromAddress,//5.8,0.2
                 toAddress,//0
                 31,
                 new BigDecimal(num),
-                fromAddress);
+                toAddress);
         if(res!=null ){
             response.setMsg("成功");
             response.setHash(res);
