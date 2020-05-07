@@ -158,6 +158,9 @@ public class AssetController {
     @RequestMapping("/selectHeight")
     public String selectHeight() {
        String height= EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight")+"";
+       if(StringUtils.isEmpty(height)){
+           EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",Const.BLOCK_HEIGHT_NOW);
+       }
         return height+" || "+Const.BLOCK_HEIGHT_NOW;
     }
 
