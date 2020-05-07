@@ -151,13 +151,17 @@ public class AssetController {
     public String insertHeight(@RequestParam String height) {
         EhcacheUtil.getInstance().remove("ehcacheHeight","blockHeight");
         EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",height);
+        Const.BLOCK_HEIGHT_NOW = height;
         return selectHeight();
     }
 
     @RequestMapping("/selectHeight")
     public String selectHeight() {
        String height= EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight")+"";
-        return height+"";
+       if(StringUtils.isEmpty(height)){
+           EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",Const.BLOCK_HEIGHT_NOW);
+       }
+        return height+" || "+Const.BLOCK_HEIGHT_NOW;
     }
 
     public String insertData(String height, List<ReceiveBean> bean) {
@@ -177,18 +181,26 @@ public class AssetController {
         return omniCoreDao.listBlockTransactions(Long.parseLong(height)).toString();
     }
 
-
+    @RequestMapping("/validate")
+    public String validate(@RequestParam String address){
+        return omniCoreDao.validateAddress(address).toString();
+    }
 
     @RequestMapping("/sendU")
-    public String sendU(@RequestParam String toAddress, @RequestParam String num) {
+    public String sendU(@RequestParam String toAddress, @RequestParam String num) {//1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb
         SendUsdtResponse response = new SendUsdtResponse();
-
+        if(!omniCoreDao.validateAddress(toAddress).isvalid){
+            response.setMsg("非法地址");
+            response.setHash("null");
+            response.setStatus(1);
+            return JSON.toJSONString(response);
+        }
         String res= omniCoreDao.sendOmniToken(
-                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb",//5.8,0.2
+                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze",//5.8,0.2
                 toAddress,//0
                 31,
                 new BigDecimal(num),
-                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb");
+                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze");
         if(res!=null ){
             response.setMsg("成功");
             response.setHash(res);
