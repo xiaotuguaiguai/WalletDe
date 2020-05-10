@@ -196,11 +196,11 @@ public class AssetController {
             return JSON.toJSONString(response);
         }
         String res= omniCoreDao.sendOmniToken(
-                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze",//5.8,0.2
+                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb",//5.8,0.2
                 toAddress,//0
                 31,
                 new BigDecimal(num),
-                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze");
+                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb");
         if(res!=null ){
             response.setMsg("成功");
             response.setHash(res);
