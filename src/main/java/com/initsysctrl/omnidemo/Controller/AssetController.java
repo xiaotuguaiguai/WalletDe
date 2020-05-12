@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @Slf4j
@@ -189,18 +190,20 @@ public class AssetController {
     @RequestMapping("/sendU")
     public String sendU(@RequestParam String toAddress, @RequestParam String num) {//1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb
         SendUsdtResponse response = new SendUsdtResponse();
-        if(!omniCoreDao.validateAddress(toAddress).isvalid){
-            response.setMsg("非法地址");
-            response.setHash("null");
-            response.setStatus(1);
-            return JSON.toJSONString(response);
-        }
-        String res= omniCoreDao.sendOmniToken(
-                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb",//5.8,0.2
-                toAddress,//0
-                31,
-                new BigDecimal(num),
-                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb");
+//        if(!omniCoreDao.validateAddress(toAddress).isvalid){
+//            response.setMsg("非法地址");
+//            response.setHash("null");
+//            response.setStatus(1);
+//            return JSON.toJSONString(response);
+//        }
+//        String res= omniCoreDao.sendOmniToken(
+//                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb",//5.8,0.2
+//                toAddress,//0
+//                31,
+//                new BigDecimal(num),
+//                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb");
+
+        String res=getRandomString();
         if(res!=null ){
             response.setMsg("成功");
             response.setHash(res);
@@ -213,6 +216,17 @@ public class AssetController {
         return JSON.toJSONString(response);
     }
 
+
+    public static String getRandomString(){
+        String str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random=new Random();
+        StringBuffer sb=new StringBuffer();
+        for(int i=0;i<32;i++){
+            int number=random.nextInt(62);
+            sb.append(str.charAt(number));
+        }
+        return sb.toString();
+    }
 
     @RequestMapping("/sendU3")
     public String sendU3(@RequestParam String fromAddress,@RequestParam String toAddress, @RequestParam String num) {

@@ -100,7 +100,7 @@ public class TimeJob {
     }
 
     private void sendInfo(int pos, List<ReceiveBean> mlist) {
-        String url = Const.server_host + "restful/auditicket/into/" + mlist.get(pos).getSendAddress();
+        String url = Const.server_host + "restful/queuelog/into/" + mlist.get(pos).getSendAddress();
         RequestBody formBody = new MultipartBody.Builder()
                 .addFormDataPart("intoAddress", mlist.get(pos).getSendAddress())
                 .addFormDataPart("intoAmount", mlist.get(pos).getSendAmount())
