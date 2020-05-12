@@ -195,15 +195,15 @@ public class AssetController {
             response.setStatus(1);
             return JSON.toJSONString(response);
         }
-//        String res= omniCoreDao.sendOmniToken(
-//                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze",//5.8,0.2
-//                toAddress,//0
-//                31,
-//                new BigDecimal(num),
-//                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze");
 
         String res = getRandomString();
 
+//        String res= omniCoreDao.sendOmniToken(
+//                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb",//5.8,0.2
+//                toAddress,//0
+//                31,
+//                new BigDecimal(num),
+//                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb");
         if(res!=null ){
             response.setMsg("成功");
             response.setHash(res);
@@ -232,12 +232,12 @@ public class AssetController {
     public String sendU3(@RequestParam String fromAddress,@RequestParam String toAddress, @RequestParam String num) {
         SendUsdtResponse response = new SendUsdtResponse();
 
-        String res= omniCoreDao.sendOmniTokenRaw(
+        String res= omniCoreDao.sendOmniToken(
                 fromAddress,//5.8,0.2
                 toAddress,//0
                 31,
                 new BigDecimal(num),
-                fromAddress);
+                toAddress);
         if(res!=null ){
             response.setMsg("成功");
             response.setHash(res);

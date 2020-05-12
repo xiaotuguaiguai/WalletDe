@@ -33,10 +33,10 @@ public class TimeJob {
     @Autowired
     OmniCoreDao omniCoreDao;
 
-    @Scheduled(fixedRate = 1000 * 10)
+    @Scheduled(fixedRate = 1000 * 30)
     public void runsecend() {
         String height = null;
-        if (Const.BLOCK_HEIGHT_NOW != null && !Const.BLOCK_HEIGHT_NOW.equals("")) {
+        if (!StringUtils.isEmpty(Const.BLOCK_HEIGHT_NOW)) {
             height = Const.BLOCK_HEIGHT_NOW;
            String aa= EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight")+"" ;
            if(StringUtils.isEmpty(aa) || aa.equals("null")){
@@ -45,7 +45,7 @@ public class TimeJob {
         } else {
             try {
                 height = EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight") + "";
-                log.warn("block height is " + height);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -69,7 +69,7 @@ public class TimeJob {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("get unDealList error=" + e.getMessage());
+
         }
         List<ReceiveBean> beanList = new ArrayList<>();
 
