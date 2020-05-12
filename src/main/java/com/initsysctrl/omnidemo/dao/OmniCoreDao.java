@@ -11,6 +11,7 @@ import com.initsysctrl.omnidemo.dto.SimpleUtxo;
 import com.initsysctrl.omnidemo.dto.reponse.*;
 import com.initsysctrl.omnidemo.exception.E;
 import com.initsysctrl.omnidemo.utils.AssertUp;
+import com.initsysctrl.omnidemo.utils.Const;
 import com.initsysctrl.omnidemo.utils.OkHttpUtils;
 import com.initsysctrl.omnidemo.utils.RpcHttpUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -710,6 +711,29 @@ public class OmniCoreDao {
         TypeReference<List<String>> typeReference = new TypeReference<List<String>>() {
         };
         try {
+            return mapper.readValue(JSON.toJSONString(object), typeReference);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /***
+     * 获取【全网】下固定区块高度的事务列表
+     * @param: [block_height：区块高度]
+     * @return: 哈希列表
+     **/
+    public List<String> listBlockTransactions2(long block_height) {
+        try {
+        Object object = http.engine("omni_listblocktransactions2", Object.class, block_height);
+
+        if(object==null){
+            return null;
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        TypeReference<List<String>> typeReference = new TypeReference<List<String>>() {
+        };
+
             return mapper.readValue(JSON.toJSONString(object), typeReference);
         } catch (IOException e) {
             e.printStackTrace();

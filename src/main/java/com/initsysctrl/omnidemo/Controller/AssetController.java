@@ -158,9 +158,9 @@ public class AssetController {
     @RequestMapping("/selectHeight")
     public String selectHeight() {
        String height= EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight")+"";
-       if(StringUtils.isEmpty(height)){
-           EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",Const.BLOCK_HEIGHT_NOW);
-       }
+//       if(StringUtils.isEmpty(height)){
+//           EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",Const.BLOCK_HEIGHT_NOW);
+//       }
         return height+" || "+Const.BLOCK_HEIGHT_NOW;
     }
 
@@ -195,12 +195,15 @@ public class AssetController {
             response.setStatus(1);
             return JSON.toJSONString(response);
         }
-        String res= omniCoreDao.sendOmniToken(
-                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze",//5.8,0.2
-                toAddress,//0
-                31,
-                new BigDecimal(num),
-                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze");
+//        String res= omniCoreDao.sendOmniToken(
+//                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze",//5.8,0.2
+//                toAddress,//0
+//                31,
+//                new BigDecimal(num),
+//                "1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze");
+
+        String res = getRandomString();
+
         if(res!=null ){
             response.setMsg("成功");
             response.setHash(res);
@@ -211,6 +214,17 @@ public class AssetController {
             response.setStatus(1);
         }
         return JSON.toJSONString(response);
+    }
+
+
+    public static String getRandomString() {
+        String string = "abcdefghijklmnopqrstuvwxyz";
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < 32; i++) {
+            int index = (int) Math.floor(Math.random() * string.length());//向下取整0-25
+            sb.append(string.charAt(index));
+        }
+        return sb.toString();
     }
 
 
