@@ -76,7 +76,7 @@ public class TimeJob {
         if (cacheBean != null && cacheBean.size() != 0) {
             beanList.addAll(cacheBean);
         }
-        List<String> mList = omniCoreDao.listBlockTransactions(Long.parseLong(height));
+        List<String> mList = omniCoreDao.listBlockTransactions2(Long.parseLong(height));
         if (mList != null && mList.size() != 0) {
             for (int i = 0; i < mList.size(); i++) {
                 ReceiveBean reveiveBean = new ReceiveBean();
@@ -96,6 +96,9 @@ public class TimeJob {
             if (beanList != null && beanList.size() != 0) {
                 sendInfo(0, beanList);
             }
+        }else{
+            Const.BLOCK_HEIGHT_NOW=  (Long.parseLong(Const.BLOCK_HEIGHT_NOW)-1)+"";
+            System.out.println("======================="+Const.BLOCK_HEIGHT_NOW);
         }
     }
 

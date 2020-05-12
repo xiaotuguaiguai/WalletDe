@@ -57,7 +57,10 @@ public class RpcHttpUtil {
     }
 
     public <T> T engine(@NotNull String method, Class<T> clazz, Object... var) {
-
+        String temp = method;
+        if(method.equals("omni_listblocktransactions2")){
+            method = "omni_listblocktransactions";
+        }
         try {
             return mClient.invoke(method, var, clazz);
         } catch (Throwable throwable) {
@@ -69,7 +72,11 @@ public class RpcHttpUtil {
             try {
                 BaseRPCresponse res = JSON.parseObject(message, BaseRPCresponse.class);
                 BaseRPCresponse.ErrorBean error = res.getError();
+               if(temp.equals("omni_listblocktransactions2")){
+                   return null;
+               }
                 throw new BaseException(String.valueOf(error.getCode()), error.getMessage());
+
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new BaseException("W000", e.getMessage());

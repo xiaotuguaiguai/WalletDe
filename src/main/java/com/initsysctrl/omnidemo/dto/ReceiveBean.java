@@ -48,4 +48,6 @@ public class ReceiveBean implements Serializable {
     public void setBlockHeight(String blockHeight) {
         this.blockHeight = blockHeight;
     }
+
+
 }

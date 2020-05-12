@@ -159,9 +159,9 @@ public class AssetController {
     @RequestMapping("/selectHeight")
     public String selectHeight() {
        String height= EhcacheUtil.getInstance().get("ehcacheHeight", "blockHeight")+"";
-       if(StringUtils.isEmpty(height)){
-           EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",Const.BLOCK_HEIGHT_NOW);
-       }
+//       if(StringUtils.isEmpty(height)){
+//           EhcacheUtil.getInstance().put("ehcacheHeight","blockHeight",Const.BLOCK_HEIGHT_NOW);
+//       }
         return height+" || "+Const.BLOCK_HEIGHT_NOW;
     }
 
@@ -196,6 +196,8 @@ public class AssetController {
 //            response.setStatus(1);
 //            return JSON.toJSONString(response);
 //        }
+
+
 //        String res= omniCoreDao.sendOmniToken(
 //                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb",//5.8,0.2
 //                toAddress,//0
@@ -227,6 +229,7 @@ public class AssetController {
         }
         return sb.toString();
     }
+
 
     @RequestMapping("/sendU3")
     public String sendU3(@RequestParam String fromAddress,@RequestParam String toAddress, @RequestParam String num) {
