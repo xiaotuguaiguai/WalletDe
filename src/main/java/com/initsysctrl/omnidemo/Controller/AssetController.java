@@ -190,22 +190,21 @@ public class AssetController {
     @RequestMapping("/sendU")
     public String sendU(@RequestParam String toAddress, @RequestParam String num) {//1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb
         SendUsdtResponse response = new SendUsdtResponse();
-//        if(!omniCoreDao.validateAddress(toAddress).isvalid){
-//            response.setMsg("非法地址");
-//            response.setHash("null");
-//            response.setStatus(1);
-//            return JSON.toJSONString(response);
-//        }
+        if(!omniCoreDao.validateAddress(toAddress).isvalid){
+            response.setMsg("非法地址");
+            response.setHash("null");
+            response.setStatus(1);
+            return JSON.toJSONString(response);
+        }
 
+        String res= omniCoreDao.sendOmniToken(
+                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb",//5.8,0.2
+                toAddress,//0
+                31,
+                new BigDecimal(num),
+                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb");
 
-//        String res= omniCoreDao.sendOmniToken(
-//                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb",//5.8,0.2
-//                toAddress,//0
-//                31,
-//                new BigDecimal(num),
-//                "1NLm54ri3jCWcndjkY5PVbmWio5ZtUMtsb");
-
-        String res=getRandomString();
+//        String res=getRandomString();
         if(res!=null ){
             response.setMsg("成功");
             response.setHash(res);
@@ -235,7 +234,7 @@ public class AssetController {
     public String sendU3(@RequestParam String fromAddress,@RequestParam String toAddress, @RequestParam String num) {
         SendUsdtResponse response = new SendUsdtResponse();
 
-        String res= omniCoreDao.sendOmniToken(
+        String res= omniCoreDao.sendOmniToken2(
                 fromAddress,//5.8,0.2
                 toAddress,//0
                 31,

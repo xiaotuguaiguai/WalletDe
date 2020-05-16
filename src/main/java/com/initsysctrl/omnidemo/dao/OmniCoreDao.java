@@ -411,6 +411,19 @@ public class OmniCoreDao {
         return http.engine("omni_funded_send", fromaddress, toaddress, propertyid, amount.toString(), feeaddress);
     }
 
+
+    public String sendOmniToken2(String fromaddress,
+                                String toaddress,
+                                long propertyid,
+                                BigDecimal amount,
+                                String feeaddress) {
+//        AssertUp.isTrue(validateAddress(feeaddress).isIsvalid(), E.ADDRESS_ERROR);
+//        AssertUp.isTrue(validateAddress(toaddress).isIsvalid(), E.ADDRESS_ERROR);
+//        AssertUp.isTrue(validateAddress(fromaddress).isIsvalid(), E.ADDRESS_ERROR);
+
+        return http.engine("omni_send", fromaddress, toaddress, propertyid, amount.toString(), feeaddress);
+    }
+
     /***
      *  使用原生模式交易
      * @param:
@@ -711,6 +724,7 @@ public class OmniCoreDao {
         TypeReference<List<String>> typeReference = new TypeReference<List<String>>() {
         };
         try {
+            System.out.println("object======="+object);
             return mapper.readValue(JSON.toJSONString(object), typeReference);
         } catch (IOException e) {
             e.printStackTrace();
@@ -728,14 +742,16 @@ public class OmniCoreDao {
         Object object = http.engine("omni_listblocktransactions2", Object.class, block_height);
 
         if(object==null){
+            System.out.println("object==null");
             return null;
         }
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<String>> typeReference = new TypeReference<List<String>>() {
         };
-
+            System.out.println("object======="+object);
             return mapper.readValue(JSON.toJSONString(object), typeReference);
         } catch (IOException e) {
+            System.out.println("IOException11="+e.getMessage());
             e.printStackTrace();
             return null;
         }

@@ -60,19 +60,27 @@ public class RpcHttpUtil {
         String temp = method;
         if(method.equals("omni_listblocktransactions2")){
             method = "omni_listblocktransactions";
+
         }
         try {
+            System.out.println("method====="+method);
             return mClient.invoke(method, var, clazz);
         } catch (Throwable throwable) {
+
             String message = throwable.getMessage();
             Throwable cause = throwable.getCause();
             log.error(message == null ? "error message=null" : "error message111=" + message);
             log.error(cause == null ? "error cause=null" : "error cause=" + cause.getMessage());
             log.error(throwable == null ? "error message=null" : "error message=" + throwable.getMessage());
+
+            System.out.println(message == null ? "error message=null" : "error message111=" + message);
+            System.out.println(cause == null ? "error cause=null" : "error cause=" + cause.getMessage());
+            System.out.println(throwable == null ? "error message=null" : "error message=" + throwable.getMessage());
             try {
                 BaseRPCresponse res = JSON.parseObject(message, BaseRPCresponse.class);
                 BaseRPCresponse.ErrorBean error = res.getError();
                if(temp.equals("omni_listblocktransactions2")){
+
                    return null;
                }
                 throw new BaseException(String.valueOf(error.getCode()), error.getMessage());

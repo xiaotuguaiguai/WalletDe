@@ -76,13 +76,20 @@ public class TimeJob {
         if (cacheBean != null && cacheBean.size() != 0) {
             beanList.addAll(cacheBean);
         }
+        System.out.println("height====="+height+"      ||real="+Long.parseLong(height));
         List<String> mList = omniCoreDao.listBlockTransactions2(Long.parseLong(height));
-        if (mList != null && mList.size() != 0) {
+
+        if (mList != null ) {
             for (int i = 0; i < mList.size(); i++) {
                 ReceiveBean reveiveBean = new ReceiveBean();
                 OmniTransactionRes omniTransactionRes = omniCoreDao.getOmniTransaction(mList.get(i));
                 if (omniTransactionRes.isValid() && omniTransactionRes.getPropertyid() == 31) {
+
                     if (omniTransactionRes.getReferenceaddress().equals(Const.MY_ADDRESS)) {
+                        log.info("入金","address="+omniTransactionRes.getSendingaddress()
+                                +" amount="+omniTransactionRes.getAmount()
+                                +" height="+omniTransactionRes.getBlock()
+                        +" txhash="+omniTransactionRes.getTxid());
                         reveiveBean.setSendAddress(omniTransactionRes.getSendingaddress());
                         reveiveBean.setSendAmount(omniTransactionRes.getAmount());
                         reveiveBean.setBlockHeight(omniTransactionRes.getBlock() + "");
