@@ -231,7 +231,7 @@ public class AssetController {
 
 
     @RequestMapping("/sendU3")
-    public String sendU3(@RequestParam String fromAddress,@RequestParam String toAddress, @RequestParam String num) {
+    public String sendU3(@RequestParam String fromAddress,@RequestParam String toAddress,@RequestParam String feedAddress,  @RequestParam String num) {
         SendUsdtResponse response = new SendUsdtResponse();
 
         String res= omniCoreDao.sendOmniToken2(
@@ -239,7 +239,7 @@ public class AssetController {
                 toAddress,//0
                 31,
                 new BigDecimal(num),
-                toAddress);
+                feedAddress);
         if(res!=null ){
             response.setMsg("成功");
             response.setHash(res);
