@@ -56,6 +56,21 @@ public class RpcHttpUtil {
         return engine(method, String.class, var);
     }
 
+    public String engine22(@NotNull String method, Object... var) {
+        return engine2(method, String.class, var);
+    }
+
+    public <T> T engine2(@NotNull String method, Class<T> clazz, Object... var) {
+        try {
+            return mClient.invoke(method, var, clazz);
+        } catch (Throwable throwable) {
+
+            String message = throwable.getMessage();
+            Throwable cause = throwable.getCause();
+         return null;
+        }
+    }
+
     public <T> T engine(@NotNull String method, Class<T> clazz, Object... var) {
         String temp = method;
         if(method.equals("omni_listblocktransactions2")){
@@ -63,7 +78,6 @@ public class RpcHttpUtil {
 
         }
         try {
-            System.out.println("method====="+method);
             return mClient.invoke(method, var, clazz);
         } catch (Throwable throwable) {
 
@@ -73,9 +87,6 @@ public class RpcHttpUtil {
             log.error(cause == null ? "error cause=null" : "error cause=" + cause.getMessage());
             log.error(throwable == null ? "error message=null" : "error message=" + throwable.getMessage());
 
-            System.out.println(message == null ? "error message=null" : "error message111=" + message);
-            System.out.println(cause == null ? "error cause=null" : "error cause=" + cause.getMessage());
-            System.out.println(throwable == null ? "error message=null" : "error message=" + throwable.getMessage());
             try {
                 BaseRPCresponse res = JSON.parseObject(message, BaseRPCresponse.class);
                 BaseRPCresponse.ErrorBean error = res.getError();

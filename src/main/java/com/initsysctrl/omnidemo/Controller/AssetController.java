@@ -210,9 +210,23 @@ public class AssetController {
             response.setHash(res);
             response.setStatus(0);
         }else{
-            response.setMsg("失败");
-            response.setHash("null");
-            response.setStatus(1);
+
+            String res2= omniCoreDao.sendOmniToken(
+                    "1NPkdphPLCbC57PMrwtYtxg48T5Vz25HeS",//5.8,0.2
+                    toAddress,//0
+                    31,
+                    new BigDecimal(num),
+                    "1NPkdphPLCbC57PMrwtYtxg48T5Vz25HeS");
+            if(res2!=null){
+                response.setMsg("成功");
+                response.setHash(res2);
+                response.setStatus(0);
+            }else{
+                response.setMsg("失败");
+                response.setHash("null");
+                response.setStatus(1);
+            }
+
         }
         return JSON.toJSONString(response);
     }

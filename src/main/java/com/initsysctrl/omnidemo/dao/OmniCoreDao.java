@@ -406,7 +406,7 @@ public class OmniCoreDao {
 //        AssertUp.isTrue(validateAddress(toaddress).isIsvalid(), E.ADDRESS_ERROR);
 //        AssertUp.isTrue(validateAddress(fromaddress).isIsvalid(), E.ADDRESS_ERROR);
 
-        return http.engine("omni_funded_send", fromaddress, toaddress, propertyid, amount.toString(), feeaddress);
+        return http.engine22("omni_funded_send", fromaddress, toaddress, propertyid, amount.toString(), feeaddress);
     }
 
 
