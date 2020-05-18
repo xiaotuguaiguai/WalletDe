@@ -83,20 +83,17 @@ public class OmniCoreDao {
 
     @SuppressWarnings("UnnecessaryLocalVariable")
     public String sendBtcBatch(String fromAddress, HashMap<String, Double> outs) {
-//        AssertUp.isTrue(validateAddress(fromAddress).isIsvalid(), E.ADDRESS_ERROR);
         Double sumAmount = 0.0;//转出的和
         for (Map.Entry<String, Double> entry : outs.entrySet()) {
             String address = entry.getKey();
             Double amount = entry.getValue();
-//            AssertUp.isTrue(validateAddress(address).isIsvalid(), E.ADDRESS_ERROR);
-//            AssertUp.isTrue(amount != null && amount > 0, E.AMOUNT_INPUT_EEROR);
             sumAmount += amount;
         }
+        log.warn("sumAmount====="+sumAmount.toString());
         BigDecimal _amount = new BigDecimal(sumAmount.toString());
         BigDecimal _fee = new BigDecimal("0.0001");
         List<UnspentRes> unspentRes = listUnSpent(fromAddress);
-//        AssertUp.isTrue(!unspentRes.isEmpty(), BLANCE_ENOUTH_ERROR);
-        log.warn(unspentRes.toString());
+        log.warn("unspentRes====="+unspentRes.toString());
         Double sumUtxo = 0.0;
         ArrayList<BaseUtxo> input = new ArrayList<>();
         for (UnspentRes utxo : unspentRes) {
@@ -110,25 +107,26 @@ public class OmniCoreDao {
         BigDecimal _sum = new BigDecimal(sumUtxo.toString());
 //       输入 >输出+手续费
 //        输入=输出+手续+找零
-//        AssertUp.isTrue(sumUtxo >= (sumAmount + _fee.doubleValue()), BLANCE_ENOUTH_ERROR);
-        log.warn(input.toString());
+        log.warn("_sum====="+_sum.toString());
+        log.warn("input====="+input.toString());
 //        最终的输出output
         HashMap<String, Double> output = new HashMap<>(outs);
 //        添加找零地址，即发送地址
+        log.warn("return======"+_sum.subtract(_amount).subtract(_fee).doubleValue());
         output.put(fromAddress, _sum.subtract(_amount).subtract(_fee).doubleValue());//找零地址地址接收
-        log.warn(output.toString());
+        log.warn("output======"+output.toString());
         //创建交易
         String createrawtransaction = http.engine("createrawtransaction", String.class, input, output);
+        System.out.println(createrawtransaction);
         log.warn("createrawtransaction" + createrawtransaction);
-//        AssertUp.isTrue(createrawtransaction != null, "创建交易失败");
         //签名交易
         SignrawtransRes signrawtransaction = http.engine("signrawtransaction", SignrawtransRes.class, createrawtransaction);
         log.warn("signrawtransaction" + signrawtransaction);
-//        AssertUp.isTrue(signrawtransaction != null, "签名失败");
+        System.out.println(signrawtransaction);
         //广播交易
         String sendrawtransaction = http.engine("sendrawtransaction", String.class, signrawtransaction.getHex());
+        System.out.println(sendrawtransaction);
         log.warn("sendrawtransaction" + sendrawtransaction);
-//        AssertUp.isTrue(sendrawtransaction != null, "广播交易失败");
         return sendrawtransaction;//返回事务哈希
     }
 
@@ -213,7 +211,7 @@ public class OmniCoreDao {
             result = http.engine("listunspent", Object.class);
         } else {
             log.warn("address="+address);
-            Object[] parms = {1, 999999, new java.lang.String[]{address}};//最小确认，最大确认
+            Object[] parms = {1, 99999999, new java.lang.String[]{address}};//最小确认，最大确认
 
             result = http.engine("listunspent", Object.class, parms);
         }

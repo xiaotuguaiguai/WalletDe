@@ -45,11 +45,11 @@ public class AssetController {
     public String getBInfo(@RequestParam  String address) {
         return omniCoreDao.getAccountByAddress(address);
     }
-
+//1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze
     @RequestMapping("/sendB")
-    public String sendB(@RequestParam String toAddress,@RequestParam  double num) {
+    public String sendB(@RequestParam String fromAddress,@RequestParam String toAddress,@RequestParam  double num) {
         System.out.println("toAddress="+toAddress+" || num="+num);
-       return omniCoreDao.sendBtc("1Aqf9HEzsE7FbsWGuW4ZxUYMFT1s5QL3ze",toAddress,num);
+       return omniCoreDao.sendBtc(fromAddress,toAddress,num);
     }
 
     @RequestMapping("/getInfo")
